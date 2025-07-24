@@ -1,0 +1,518 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{{ detail.car_name }} - Car Details{% endblock %}
+
+{% block body %}
+<!-- Car Detail Hero Section -->
+<section class="car-detail-hero py-5">
+    <div class="container">
+<div class="row align-items-start">
+            <div class="col-lg-6 mb-4 mb-lg-0" data-aos="fade-right">
+                <div class="car-image-container" data-bs-toggle="modal" data-bs-target="#imageModal">
+                    {% if detail.image %}
+                        <img src="{{ detail.image.url }}" class="img-fluid car-detail-image" alt="{{ detail.car_name }}">
+                        <div class="image-zoom-indicator">
+                            <i class="fas fa-search-plus"></i>
+                            <span>Click to view full size</span>
+                        </div>
+                    {% else %}
+                        <div class="no-image-placeholder">
+                            <i class="fas fa-car fa-4x"></i>
+                            <p class="mt-3">No Image Available</p>
+                        </div>
+                    {% endif %}
+                    <div class="image-overlay">
+                        <div class="overlay-content">
+                            <div class="rating-badge">
+                                <div class="stars">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                </div>
+                                <span class="rating-text">5.0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6" data-aos="fade-left">
+                <div class="car-info-card">
+                    <div class="car-header">
+                        <h1 class="car-name">{{ detail.car_name }}</h1>
+                        <div class="car-company">
+                            <i class="fas fa-building me-2"></i>{{ detail.company_name }}
+                        </div>
+                    </div>
+                    
+                    <div class="car-specs">
+                        <h5 class="specs-title">Specifications</h5>
+                        <div class="specs-grid">
+                            <div class="spec-item">
+                                <div class="spec-icon">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                                <div class="spec-content">
+                                    <div class="spec-label">Seats</div>
+                                    <div class="spec-value">{{ detail.num_of_seats }} Passengers</div>
+                                </div>
+                            </div>
+                            <div class="spec-item">
+                                <div class="spec-icon">
+                                    <i class="fas fa-dollar-sign"></i>
+                                </div>
+                                <div class="spec-content">
+                                    <div class="spec-label">Daily Rate</div>
+                                    <div class="spec-value">${{ detail.cost_par_day }}</div>
+                                </div>
+                            </div>
+                            <div class="spec-item">
+                                <div class="spec-icon">
+                                    <i class="fas fa-heart"></i>
+                                </div>
+                                <div class="spec-content">
+                                    <div class="spec-label">Popularity</div>
+                                    <div class="spec-value">{{ detail.like }} Likes</div>
+                                </div>
+                            </div>
+                            <div class="spec-item">
+                                <div class="spec-icon">
+                                    <i class="fas fa-shield-alt"></i>
+                                </div>
+                                <div class="spec-content">
+                                    <div class="spec-label">Insurance</div>
+                                    <div class="spec-value">Full Coverage</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {% if detail.content %}
+                    <div class="car-description">
+                        <h5 class="description-title">About This Car</h5>
+                        <p class="description-text">{{ detail.content }}</p>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="pricing-section">
+                        <div class="price-display">
+                            <span class="price-amount">${{ detail.cost_par_day }}</span>
+                            <span class="price-period">per day</span>
+                        </div>
+                        <div class="price-features">
+                            <ul class="feature-list">
+                                <li><i class="fas fa-check text-success"></i> Free cancellation</li>
+                                <li><i class="fas fa-check text-success"></i> 24/7 roadside assistance</li>
+                                <li><i class="fas fa-check text-success"></i> Full insurance coverage</li>
+                                <li><i class="fas fa-check text-success"></i> Unlimited mileage</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <a href="{% url 'system:order_create_with_car' detail.id %}" class="btn btn-booking-primary btn-lg">
+                            <i class="fas fa-calendar-check me-2"></i>Book This Car
+                        </a>
+                        <div class="secondary-actions mt-3">
+                            <a href="{% url 'system:newcar' %}" class="btn btn-outline-secondary me-2">
+                                <i class="fas fa-arrow-left me-1"></i>Back to Cars
+                            </a>
+                            {% if user.is_authenticated and user.is_superuser %}
+                                <a href="{% url 'adminIndex' %}" class="btn btn-outline-primary">
+                                    <i class="fas fa-cog me-1"></i>Admin Panel
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Additional Features Section -->
+<section class="features-section py-5 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 text-center mb-5">
+                <h2 class="section-title">What's Included</h2>
+                <p class="section-subtitle">Everything you need for a perfect driving experience</p>
+            </div>
+        </div>
+        <div class="row g-4">
+            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="100">
+                <div class="feature-card text-center">
+                    <div class="feature-icon mb-3">
+                        <i class="fas fa-gas-pump"></i>
+                    </div>
+                    <h5>Fuel Efficient</h5>
+                    <p class="text-muted">Optimized for maximum fuel efficiency to save you money</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="200">
+                <div class="feature-card text-center">
+                    <div class="feature-icon mb-3">
+                        <i class="fas fa-wifi"></i>
+                    </div>
+                    <h5>WiFi Hotspot</h5>
+                    <p class="text-muted">Stay connected with complimentary WiFi hotspot</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="300">
+                <div class="feature-card text-center">
+                    <div class="feature-icon mb-3">
+                        <i class="fas fa-snowflake"></i>
+                    </div>
+                    <h5>Climate Control</h5>
+                    <p class="text-muted">Advanced climate control for your comfort</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="400">
+                <div class="feature-card text-center">
+                    <div class="feature-icon mb-3">
+                        <i class="fas fa-music"></i>
+                    </div>
+                    <h5>Premium Audio</h5>
+                    <p class="text-muted">High-quality sound system with Bluetooth connectivity</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Image Lightbox Modal -->
+<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content bg-transparent border-0">
+            <div class="modal-header border-0 pb-0">
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center p-0">
+                {% if detail.image %}
+                    <img src="{{ detail.image.url }}" class="img-fluid lightbox-image" alt="{{ detail.car_name }}">
+                    <div class="image-info mt-3">
+                        <h4 class="text-white">{{ detail.car_name }}</h4>
+                        <p class="text-white-50">{{ detail.company_name }}</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Car Detail Hero Section */
+.car-detail-hero {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+}
+
+.car-image-container {
+    position: relative;
+    overflow: hidden;
+    border-radius: 20px;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+}
+
+.car-detail-image {
+    width: 100%;
+    height: 600px;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+    border-radius: 20px;
+    cursor: pointer;
+}
+
+.car-image-container:hover .car-detail-image {
+    transform: scale(1.05);
+}
+
+.no-image-placeholder {
+    height: 400px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #6c757d;
+}
+
+.image-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, rgba(102, 126, 234, 0.8) 0%, rgba(118, 75, 162, 0.8) 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    display: flex;
+    align-items: flex-end;
+    padding: 2rem;
+}
+
+.car-image-container:hover .image-overlay {
+    opacity: 1;
+}
+
+.rating-badge {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 1rem;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.stars i {
+    color: #ffc107;
+    margin-right: 0.2rem;
+}
+
+.rating-text {
+    font-weight: 600;
+    color: #1f2937;
+}
+
+/* Car Info Card */
+.car-info-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border-radius: 24px;
+    padding: 2.5rem;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.car-name {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+    color: #1f2937;
+}
+
+.car-company {
+    color: #667eea;
+    font-size: 1.1rem;
+    font-weight: 500;
+    margin-bottom: 2rem;
+}
+
+/* Specifications */
+.specs-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    color: #374151;
+}
+
+.specs-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.spec-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: rgba(102, 126, 234, 0.05);
+    border-radius: 12px;
+    border: 1px solid rgba(102, 126, 234, 0.1);
+}
+
+.spec-icon {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.2rem;
+}
+
+.spec-label {
+    font-size: 0.85rem;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.spec-value {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #374151;
+}
+
+/* Description */
+.description-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: #374151;
+}
+
+.description-text {
+    color: #6b7280;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+}
+
+/* Pricing */
+.pricing-section {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+    padding: 2rem;
+    border-radius: 16px;
+    margin-bottom: 2rem;
+    border: 2px solid rgba(102, 126, 234, 0.1);
+}
+
+.price-display {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.price-amount {
+    font-size: 3rem;
+    font-weight: 900;
+    color: #667eea;
+}
+
+.price-period {
+    font-size: 1.2rem;
+    color: #6b7280;
+    font-weight: 500;
+}
+
+.feature-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.feature-list li {
+    padding: 0.5rem 0;
+    color: #374151;
+    font-weight: 500;
+}
+
+.feature-list i {
+    margin-right: 0.75rem;
+}
+
+/* Action Buttons */
+.action-buttons {
+    text-align: center;
+}
+
+.secondary-actions {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+/* Feature Cards in Additional Section */
+.features-section .feature-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    height: 100%;
+}
+
+.features-section .feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+.features-section .feature-icon {
+    width: 70px;
+    height: 70px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+}
+
+.features-section .feature-icon i {
+    font-size: 1.8rem;
+    color: white;
+}
+
+.features-section h5 {
+    font-weight: 700;
+    margin: 1rem 0;
+    color: #374151;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .car-name {
+        font-size: 2rem;
+    }
+    
+    .specs-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .car-info-card {
+        padding: 2rem 1.5rem;
+    }
+    
+    .secondary-actions {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .price-amount {
+        font-size: 2.5rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add smooth scrolling animation
+    const cards = document.querySelectorAll('.feature-card');
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+    
+    const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, observerOptions);
+    
+    cards.forEach(card => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(30px)';
+        card.style.transition = 'all 0.6s ease';
+        observer.observe(card);
+    });
+});
+</script>
+{% endblock %}

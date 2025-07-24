@@ -1,0 +1,1095 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Brownie Car Rental - Premium Car Rental Service{% endblock %}</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTggMTZIMjRNOCAxNkw0IDEyTTggMTZMNCAyME0yNCAxNkwyOCAxMk0yNCAxNkwyOCAyMCIgc3Ryb2tlPSIjMzQ5OGRiIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgo8L3N2Zz4K">
+    
+    <!-- Google Fonts preconnect -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <!-- Bootstrap 5.3.2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- AOS Animation Library -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
+    <!-- Chart.js for Analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Optimized Custom CSS -->
+    <link rel="stylesheet" href="{% static 'css/optimized.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    
+    <!-- Resource hints for better performance -->
+    <link rel="dns-prefetch" href="//fonts.googleapis.com">
+    <link rel="dns-prefetch" href="//fonts.gstatic.com">
+    <link rel="dns-prefetch" href="//cdn.jsdelivr.net">
+    <link rel="dns-prefetch" href="//cdnjs.cloudflare.com">
+    <link rel="dns-prefetch" href="//unpkg.com">
+    
+    <!-- Preload critical resources -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@400;500;600;700;800;900&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@400;500;600;700;800;900&display=swap"></noscript>
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+    <!-- Loading Spinner -->
+    <div id="loading" class="loading-overlay">
+        <div class="loading-spinner">
+            <i class="fas fa-car fa-3x text-primary"></i>
+            <div class="loading-text">Loading...</div>
+        </div>
+    </div>
+    
+    <!-- Loading Styles -->
+    <style>
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.3s ease;
+        }
+        
+        .loading-spinner {
+            text-align: center;
+            color: #007bff;
+        }
+        
+        .loading-spinner i {
+            animation: pulse 2s infinite;
+        }
+        
+        .loading-text {
+            margin-top: 1rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        /* Navbar Styles */
+        .navbar {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.95) 0%, rgba(118, 75, 162, 0.95) 100%);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            text-decoration: none;
+        }
+        
+        .brand-icon-container {
+            position: relative;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .brand-text {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 800;
+        }
+        
+        .brand-subtitle {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.8rem;
+            display: block;
+            margin-top: -5px;
+        }
+        
+        .navbar-toggler {
+            border: none;
+            padding: 0.5rem;
+        }
+        
+        .navbar-toggler-line {
+            display: block;
+            width: 25px;
+            height: 3px;
+            background: white;
+            margin: 5px 0;
+            transition: 0.3s;
+        }
+        
+        .nav-link {
+            color: rgba(255, 255, 255, 0.9) !important;
+            font-weight: 500;
+            padding: 0.5rem 1rem !important;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            margin: 0 0.2rem;
+        }
+        
+        .nav-link:hover {
+            color: white !important;
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .dropdown-menu {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Search Form Styles */
+        .advanced-search-form {
+            max-width: 400px;
+            width: 100%;
+        }
+        
+        .search-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 25px;
+            padding: 0.5rem;
+            backdrop-filter: blur(10px);
+        }
+        
+        .search-icon {
+            color: rgba(255, 255, 255, 0.7);
+            margin-left: 0.5rem;
+        }
+        
+        .search-input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            color: white;
+            padding: 0.5rem;
+            outline: none;
+            font-size: 0.9rem;
+        }
+        
+        .search-input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        .search-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 0.5rem;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .search-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+    </style>
+
+    <!-- Advanced Modern Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNavbar">
+        <div class="container-fluid px-4">
+            <!-- Enhanced Brand -->
+            <a class="navbar-brand d-flex align-items-center" href="{% if user.is_authenticated and user.is_superuser %}{% url 'adminIndex' %}{% else %}{% url 'home' %}{% endif %}">
+                <div class="brand-icon-container me-3">
+                    <i class="fas fa-car"></i>
+                    <div class="brand-accent"></div>
+                </div>
+                <div class="brand-text-container">
+                    <span class="brand-text">Brownie</span>
+                    <span class="brand-subtitle">Car Rental</span>
+                </div>
+            </a>
+            
+            <!-- Advanced Mobile Toggle -->
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-line"></span>
+                <span class="navbar-toggler-line"></span>
+                <span class="navbar-toggler-line"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <!-- Advanced Search Form -->
+                {% block search %}
+                <div class="d-flex mx-auto">
+                    <form method="GET" class="advanced-search-form" role="search">
+                        <div class="search-container">
+                            <div class="search-icon">
+                                <i class="fas fa-search"></i>
+                            </div>
+                            <input type="text" class="search-input" placeholder="Search luxury cars, SUVs, sedans..." value="{{request.GET.q}}" name="q">
+                            <button class="search-btn" type="submit">
+                                <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                {% endblock %}
+                
+                <!-- Navigation Links -->
+                <ul class="navbar-nav ms-auto">
+                    {% block nav %}
+                    {% if user.is_authenticated %}
+                        {% if user.is_superuser %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'adminIndex' %}">
+                                    <i class="fas fa-tachometer-alt me-1"></i> Dashboard
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'car_create' %}">
+                                    <i class="fas fa-plus me-1"></i> Add Car
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'order_list' %}">
+                                    <i class="fas fa-clipboard-list me-1"></i> Orders
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'message' %}">
+                                    <i class="fas fa-envelope me-1"></i> Messages
+                                </a>
+                            </li>
+                        {% else %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'system:newcar' %}">
+                                    <i class="fas fa-car me-1"></i> New Cars
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'system:popularcar' %}">
+                                    <i class="fas fa-star me-1"></i> Popular Cars
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'system:contact' %}">
+                                    <i class="fas fa-envelope me-1"></i> Contact
+                                </a>
+                            </li>
+                        {% endif %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-user-circle me-1"></i> {{request.user.username}}
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="{% url 'logout' %}">
+                                    <i class="fas fa-sign-out-alt me-2"></i> Logout
+                                </a></li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'home' %}">
+                                <i class="fas fa-home me-1"></i> Home
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'system:about' %}">
+                                <i class="fas fa-info-circle me-1"></i> About
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'system:services' %}">
+                                <i class="fas fa-cogs me-1"></i> Services
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'system:car_list' %}">
+                                <i class="fas fa-car me-1"></i> Cars
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'system:reviews' %}">
+                                <i class="fas fa-star me-1"></i> Reviews
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'system:contact' %}">
+                                <i class="fas fa-envelope me-1"></i> Contact
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'system:booking' %}">
+                                <i class="fas fa-calendar-alt me-1"></i> Book Now
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'login' %}">
+                                <i class="fas fa-sign-in-alt me-1"></i> Login
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link btn btn-primary text-white ms-2 px-3 rounded-pill" href="{% url 'register' %}">
+                                <i class="fas fa-user-plus me-1"></i> Register
+                            </a>
+                        </li>
+                    {% endif %}
+                    {% endblock %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Main Content -->
+    <main class="main-content" style="padding-top: 80px;">
+        {% block body %}
+        <!-- Page content goes here -->
+        {% endblock %}
+    </main>
+    
+    <!-- Modern Footer -->
+    <footer class="footer bg-dark text-light py-5 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 mb-4">
+                    <h5 class="text-primary mb-3">
+                        <i class="fas fa-car me-2"></i>Brownie Car Rental
+                    </h5>
+                    <p class="text-muted">Premium car rental service providing luxury and comfort for all your transportation needs.</p>
+                    <div class="social-links">
+                        <a href="#" class="text-light me-3"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="text-light me-3"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-light me-3"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-light"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <h6 class="text-primary mb-3">Quick Links</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="{% url 'home' %}" class="text-muted text-decoration-none">Home</a></li>
+                        <li><a href="{% url 'system:about' %}" class="text-muted text-decoration-none">About</a></li>
+                        <li><a href="{% url 'system:services' %}" class="text-muted text-decoration-none">Services</a></li>
+                        <li><a href="{% url 'system:car_list' %}" class="text-muted text-decoration-none">Cars</a></li>
+                        <li><a href="{% url 'system:reviews' %}" class="text-muted text-decoration-none">Reviews</a></li>
+                        <li><a href="{% url 'system:contact' %}" class="text-muted text-decoration-none">Contact</a></li>
+                        <li><a href="{% url 'system:booking' %}" class="text-muted text-decoration-none">Book Now</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <h6 class="text-primary mb-3">Contact Info</h6>
+                    <ul class="list-unstyled text-muted">
+                        <li class="mb-2"><i class="fas fa-map-marker-alt me-2"></i>123 Premium Drive, Downtown</li>
+                        <li class="mb-2"><i class="fas fa-phone me-2"></i>+1 (555) 123-4567</li>
+                        <li class="mb-2"><i class="fas fa-envelope me-2"></i>info@browniecarrental.com</li>
+                        <li class="mb-2"><i class="fas fa-globe me-2"></i>www.browniecarrental.com</li>
+                    </ul>
+                </div>
+                <div class="col-lg-3 col-md-12 mb-4">
+                    <h6 class="text-primary mb-3">Business Hours</h6>
+                    <ul class="list-unstyled text-muted">
+                        <li class="mb-1"><i class="fas fa-clock me-2"></i>Monday - Friday: 8:00 AM - 8:00 PM</li>
+                        <li class="mb-1"><i class="fas fa-clock me-2"></i>Saturday: 9:00 AM - 6:00 PM</li>
+                        <li class="mb-1"><i class="fas fa-clock me-2"></i>Sunday: 10:00 AM - 4:00 PM</li>
+                        <li class="mt-2"><small class="text-info"><i class="fas fa-info-circle me-1"></i>24/7 Emergency Support Available</small></li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="border-secondary">
+            <div class="row">
+                <div class="col-md-6">
+                    <p class="mb-0 text-muted">&copy; 2025 Brownie Car Rental. All rights reserved.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p class="mb-0 text-muted">Made with <i class="fas fa-heart text-danger"></i> for car enthusiasts</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- AOS Animation JS -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    
+    <!-- Enhanced Custom JavaScript -->
+    <script>
+        // Fallback if static JS file fails to load
+        function initializeApp() {
+            console.log('App initialized');
+        }
+    </script>
+    <script src="{% static 'js/app.js' %}" onerror="initializeApp();"></script>
+    
+    <!-- Loading Spinner Control -->
+    <script>
+        // Enhanced loading spinner control with error handling
+        document.addEventListener('DOMContentLoaded', function() {
+            try {
+                const loadingSpinner = document.getElementById('loading');
+                if (loadingSpinner) {
+                    loadingSpinner.style.opacity = '0';
+                    setTimeout(() => {
+                        loadingSpinner.style.display = 'none';
+                    }, 300);
+                }
+                
+                // Initialize AOS if available
+                if (typeof AOS !== 'undefined') {
+                    AOS.init({
+                        duration: 1000,
+                        easing: 'ease-in-out',
+                        once: true,
+                        mirror: false,
+                        offset: 100
+                    });
+                }
+            } catch (error) {
+                console.warn('Error initializing page:', error);
+                // Ensure spinner is hidden even if there's an error
+                const spinner = document.getElementById('loading');
+                if (spinner) spinner.style.display = 'none';
+            }
+        });
+        
+        // Also hide on window load as backup
+        window.addEventListener('load', function() {
+            const loadingSpinner = document.getElementById('loading');
+            if (loadingSpinner) {
+                loadingSpinner.style.opacity = '0';
+                setTimeout(() => {
+                    loadingSpinner.style.display = 'none';
+                }, 100);
+            }
+        });
+        
+        // Show loading spinner for form submissions and navigation
+        document.addEventListener('DOMContentLoaded', function() {
+            const forms = document.querySelectorAll('form');
+            const links = document.querySelectorAll('a[href]:not([href^="#"]):not([href^="javascript:"]):not([target="_blank"])');
+            
+            function showLoading() {
+                const loadingSpinner = document.getElementById('loading');
+                if (loadingSpinner) {
+                    loadingSpinner.style.display = 'flex';
+                    loadingSpinner.style.opacity = '1';
+                }
+            }
+            
+            forms.forEach(form => {
+                form.addEventListener('submit', showLoading);
+            });
+            
+            links.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    if (this.href && this.href !== window.location.href) {
+                        showLoading();
+                    }
+                });
+            });
+        });
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+    
+    <!-- Floating Chat Widget -->
+    <div id="chat-widget" class="chat-widget">
+        <button id="chat-toggle" class="chat-toggle" title="Chat with us">
+            <i id="chat-icon" class="fas fa-comments"></i>
+            <span id="chat-text">Chat</span>
+        </button>
+        <div id="chat-window" class="chat-window d-none">
+            <div class="chat-header">
+                <h6 class="mb-0">AI Assistant</h6>
+                <button id="chat-close" class="btn-close" aria-label="Close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div id="chat-messages" class="chat-messages">
+                <!-- Messages will be loaded here -->
+            </div>
+            <div class="chat-typing d-none">
+                <i class="fas fa-robot"></i>
+                <span>Bot is typing...</span>
+            </div>
+            <div class="chat-input">
+                <input type="text" id="chat-input" class="form-control" placeholder="Type your message..." maxlength="500">
+                <button id="chat-send" class="btn btn-primary" disabled>
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <style>
+        .chat-widget {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1050;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .chat-toggle {
+            background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+            border: none;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(0, 123, 255, 0.3);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+        }
+        
+        .chat-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(0, 123, 255, 0.4);
+        }
+        
+        .chat-window {
+            position: absolute;
+            bottom: 70px;
+            right: 0;
+            width: 350px;
+            height: 500px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            border: 1px solid #e0e0e0;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .chat-header {
+            background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .chat-header .btn-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: #f8f9fa;
+        }
+        
+        .chat-message {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        
+        .chat-message.user {
+            justify-content: flex-end;
+        }
+        
+        .chat-message.user .message-bubble {
+            background: #007bff;
+            color: white;
+            border-radius: 18px 18px 4px 18px;
+        }
+        
+        .chat-message.bot .message-bubble {
+            background: white;
+            color: #333;
+            border: 1px solid #e0e0e0;
+            border-radius: 18px 18px 18px 4px;
+        }
+        
+        .message-bubble {
+            padding: 12px 16px;
+            max-width: 80%;
+            word-wrap: break-word;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+        
+        .message-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #6c757d;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+        }
+        
+        .message-avatar.bot {
+            background: #28a745;
+        }
+        
+        .chat-typing {
+            padding: 10px 20px;
+            color: #6c757d;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .chat-input {
+            padding: 15px;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .chat-input input {
+            flex: 1;
+            border: 1px solid #e0e0e0;
+            border-radius: 20px;
+            padding: 10px 15px;
+            font-size: 14px;
+            outline: none;
+        }
+        
+        .chat-input button {
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+        }
+        
+        .chat-input button:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+        
+        .chat-welcome {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 14px;
+            border-left: 4px solid #2196f3;
+        }
+        
+        @media (max-width: 768px) {
+            .chat-widget {
+                bottom: 10px;
+                right: 10px;
+            }
+            
+            .chat-window {
+                width: 300px;
+                height: 450px;
+            }
+        }
+    </style>
+    
+    <script>
+        // Chat Widget JavaScript
+        let chatSocket = null;
+        let isConnected = false;
+        let roomId = null;
+        let currentRoomStatus = 'bot_only';
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            const chatToggle = document.getElementById('chat-toggle');
+            const chatWindow = document.getElementById('chat-window');
+            const chatClose = document.getElementById('chat-close');
+            const chatInput = document.getElementById('chat-input');
+            const chatSend = document.getElementById('chat-send');
+            const chatMessages = document.getElementById('chat-messages');
+            
+            // Generate unique room ID
+            roomId = 'room_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            
+            chatToggle.addEventListener('click', function() {
+                if (chatWindow.classList.contains('d-none')) {
+                    openChat();
+                } else {
+                    closeChat();
+                }
+            });
+            
+            chatClose.addEventListener('click', function() {
+                closeChat();
+            });
+            
+            chatInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            });
+            
+            chatInput.addEventListener('input', function() {
+                chatSend.disabled = !this.value.trim() || !isConnected;
+            });
+            
+            chatSend.addEventListener('click', sendMessage);
+            
+            function openChat() {
+                chatWindow.classList.remove('d-none');
+                chatToggle.innerHTML = '<i class="fas fa-times"></i><span>Close</span>';
+                
+                if (!isConnected) {
+                    connectWebSocket();
+                } else {
+                    // Show welcome message if no messages exist
+                    if (chatMessages.children.length === 0) {
+                        showWelcomeMessage();
+                    }
+                }
+            }
+            
+            function closeChat() {
+                chatWindow.classList.add('d-none');
+                chatToggle.innerHTML = '<i class="fas fa-comments"></i><span>Chat</span>';
+            }
+            
+            function connectWebSocket() {
+                // For development/fallback - use simulation instead of WebSocket
+                simulateWebSocketConnection();
+                return;
+                
+                const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+                const socketUrl = `${protocol}//${window.location.host}/ws/chat/${roomId}/`;
+                
+                chatSocket = new WebSocket(socketUrl);
+                
+                chatSocket.onopen = function(e) {
+                    console.log('Chat WebSocket connected');
+                    isConnected = true;
+                    chatSend.disabled = !chatInput.value.trim();
+                    showWelcomeMessage();
+                };
+                
+                chatSocket.onmessage = function(e) {
+                    const data = JSON.parse(e.data);
+                    handleIncomingMessage(data);
+                };
+                
+                chatSocket.onclose = function(e) {
+                    console.log('Chat WebSocket disconnected - falling back to simulation');
+                    // Fall back to simulation if WebSocket fails
+                    simulateWebSocketConnection();
+                };
+                
+                chatSocket.onerror = function(e) {
+                    console.error('Chat WebSocket error - falling back to simulation:', e);
+                    // Fall back to simulation if WebSocket fails
+                    simulateWebSocketConnection();
+                };
+            }
+            
+            function simulateWebSocketConnection() {
+                console.log('Using simulated chat bot (WebSocket fallback)');
+                isConnected = true;
+                chatSend.disabled = !chatInput.value.trim();
+                
+                // Show welcome message immediately
+                setTimeout(() => {
+                    showWelcomeMessage();
+                }, 500);
+            }
+            
+            function sendMessage() {
+                const message = chatInput.value.trim();
+                if (!message || !isConnected) return;
+                
+                // Add user message to chat immediately
+                const userMessage = {
+                    message: message,
+                    sender: 'You',
+                    sender_type: 'user',
+                    timestamp: new Date().toISOString()
+                };
+                addMessageToChat(userMessage.message, userMessage.sender, userMessage.sender_type, userMessage.timestamp);
+                
+                // Clear input
+                chatInput.value = '';
+                chatSend.disabled = true;
+                
+                // Check if we have a real WebSocket connection
+                if (chatSocket && chatSocket.readyState === WebSocket.OPEN) {
+                    const messageData = {
+                        message: message,
+                        type: 'user_message'
+                    };
+                    chatSocket.send(JSON.stringify(messageData));
+                } else {
+                    // Use simulation for bot response
+                    simulateBotResponse(message);
+                }
+            }
+            
+            function simulateBotResponse(userMessage) {
+                // Show typing indicator
+                showTypingIndicator();
+                
+                // Advanced bot response logic
+                const lowerMessage = userMessage.toLowerCase();
+                let response = getAdvancedBotResponse(lowerMessage);
+                
+                // Simulate realistic typing delay based on response length
+                const typingDelay = Math.max(1000, Math.min(3000, response.length * 15));
+                
+                setTimeout(() => {
+                    hideTypingIndicator();
+                    const botMessage = {
+                        message: response,
+                        sender: 'Bot Assistant',
+                        sender_type: 'bot',
+                        timestamp: new Date().toISOString()
+                    };
+                    addMessageToChat(botMessage.message, botMessage.sender, botMessage.sender_type, botMessage.timestamp);
+                }, typingDelay);
+            }
+            
+            function getAdvancedBotResponse(lowerMessage) {
+                // Greeting responses
+                if (lowerMessage.includes('hello') || lowerMessage.includes('hi') || lowerMessage.includes('hey') || lowerMessage.includes('good morning') || lowerMessage.includes('good afternoon') || lowerMessage.includes('good evening')) {
+                    const greetings = [
+                        'Hello! Welcome to Brownie Car Rental! 🚗 How can I assist you with your car rental needs today?',
+                        'Hi there! I\'m your virtual assistant for Brownie Car Rental. What can I help you with today?',
+                        'Hey! Great to have you here. I\'m ready to help you find the perfect car for your needs. What are you looking for?'
+                    ];
+                    return greetings[Math.floor(Math.random() * greetings.length)];
+                }
+                
+                // Pricing and cost inquiries
+                if (lowerMessage.includes('price') || lowerMessage.includes('cost') || lowerMessage.includes('rate') || lowerMessage.includes('fee') || lowerMessage.includes('charge') || lowerMessage.includes('expensive') || lowerMessage.includes('cheap') || lowerMessage.includes('affordable')) {
+                    return `Our competitive pricing structure:\n\n💰 **Economy Cars**: Starting from $25/day\n💰 **Mid-size Cars**: Starting from $35/day\n💰 **Luxury Cars**: Starting from $65/day\n💰 **SUVs**: Starting from $45/day\n\nPrices include:\n✅ Insurance coverage\n✅ 24/7 roadside assistance\n✅ Unlimited mileage\n✅ Free cancellation up to 24 hours\n\nWould you like me to help you find cars within a specific budget range?`;
+                }
+                
+                // Car types and availability
+                if (lowerMessage.includes('car') || lowerMessage.includes('vehicle') || lowerMessage.includes('available') || lowerMessage.includes('fleet') || lowerMessage.includes('type')) {
+                    if (lowerMessage.includes('luxury') || lowerMessage.includes('premium')) {
+                        return `🏆 **Luxury Car Collection:**\n\n• Mercedes-Benz C-Class\n• BMW 3 Series\n• Audi A4\n• Lexus ES\n• Cadillac CTS\n\nFeatures:\n✨ Premium interior\n✨ Advanced safety features\n✨ GPS navigation\n✨ Bluetooth connectivity\n✨ Premium sound system\n\nStarting from $65/day. Would you like to see specific luxury models or make a reservation?`;
+                    } else if (lowerMessage.includes('suv') || lowerMessage.includes('family')) {
+                        return `🚙 **SUV Collection:**\n\n• Toyota RAV4\n• Honda CR-V\n• Ford Explorer\n• Chevrolet Tahoe\n• Nissan Pathfinder\n\nPerfect for:\n👨‍👩‍👧‍👦 Family trips\n🏔️ Adventure travels\n📦 Extra cargo space\n🛡️ Enhanced safety\n\nStarting from $45/day. Need help choosing the right SUV for your trip?`;
+                    } else if (lowerMessage.includes('economy') || lowerMessage.includes('budget') || lowerMessage.includes('small')) {
+                        return `💡 **Economy Car Collection:**\n\n• Toyota Corolla\n• Honda Civic\n• Nissan Sentra\n• Hyundai Elantra\n• Chevrolet Spark\n\nBenefits:\n⛽ Excellent fuel economy\n💰 Budget-friendly\n🅿️ Easy parking\n🌱 Eco-friendly\n\nStarting from $25/day. Perfect for city driving and short trips!`;
+                    } else {
+                        return `🚗 **Our Complete Fleet:**\n\n🏆 **Luxury Cars** (from $65/day)\n🚙 **SUVs** (from $45/day)\n🚗 **Mid-size Cars** (from $35/day)\n💡 **Economy Cars** (from $25/day)\n\n**All vehicles include:**\n✅ Full insurance coverage\n✅ 24/7 roadside assistance\n✅ Unlimited mileage\n✅ Free GPS navigation\n✅ Bluetooth connectivity\n\nWhat type of vehicle are you interested in?`;
+                    }
+                }
+                
+                // Booking and reservation
+                if (lowerMessage.includes('book') || lowerMessage.includes('reserve') || lowerMessage.includes('rent') || lowerMessage.includes('hire') || lowerMessage.includes('reservation')) {
+                    return `📅 **Easy Booking Process:**\n\n**Step 1:** Browse our car collection\n**Step 2:** Select your preferred dates\n**Step 3:** Choose pickup/drop-off location\n**Step 4:** Complete your reservation\n\n**You'll need:**\n🆔 Valid driver's license\n💳 Credit card\n📱 Contact information\n\n**Booking Benefits:**\n✅ Instant confirmation\n✅ Free cancellation (up to 24 hours)\n✅ No hidden fees\n✅ Secure payment\n\nWould you like me to guide you to our booking page or help you choose a specific car?`;
+                }
+                
+                // Location and pickup
+                if (lowerMessage.includes('location') || lowerMessage.includes('address') || lowerMessage.includes('pickup') || lowerMessage.includes('where') || lowerMessage.includes('office') || lowerMessage.includes('branch')) {
+                    return `📍 **Our Locations & Services:**\n\n**Main Office:**\n🏢 123 Premium Drive, Downtown\n📞 +1 (555) 123-4567\n🕐 Mon-Fri: 8AM-8PM, Sat: 9AM-6PM, Sun: 10AM-4PM\n\n**Services Available:**\n🚗 **Free Pickup & Delivery** (within 10 miles)\n🛫 **Airport Pickup** (additional $15)\n🏨 **Hotel Delivery** (free for 3+ day rentals)\n🏠 **Home Delivery** (within city limits)\n\n**Additional Locations:**\n✈️ City Airport Terminal\n🏨 Downtown Hotel District\n🚉 Central Train Station\n\nWould you like me to arrange pickup/delivery for your rental?`;
+                }
+                
+                // Hours and availability
+                if (lowerMessage.includes('hours') || lowerMessage.includes('open') || lowerMessage.includes('close') || lowerMessage.includes('time') || lowerMessage.includes('schedule')) {
+                    return `🕐 **Operating Hours:**\n\n**Main Office:**\n• Monday - Friday: 8:00 AM - 8:00 PM\n• Saturday: 9:00 AM - 6:00 PM\n• Sunday: 10:00 AM - 4:00 PM\n\n**24/7 Services:**\n🚨 Emergency roadside assistance\n📞 Customer support hotline\n🔧 Breakdown service\n\n**Extended Hours Available:**\n✈️ Airport location: 6:00 AM - 11:00 PM daily\n🏨 Hotel district: 7:00 AM - 10:00 PM daily\n\n**After Hours:**\nKey drop-off boxes available at all locations for convenient returns!`;
+                }
+                
+                // Insurance and coverage
+                if (lowerMessage.includes('insurance') || lowerMessage.includes('coverage') || lowerMessage.includes('protection') || lowerMessage.includes('accident') || lowerMessage.includes('damage')) {
+                    return `🛡️ **Comprehensive Insurance Coverage:**\n\n**Included with every rental:**\n✅ Collision Damage Waiver (CDW)\n✅ Theft Protection\n✅ Third-party Liability\n✅ Personal Accident Insurance\n\n**Optional Coverage:**\n🔧 **Roadside Assistance Plus** (+$5/day)\n🧳 **Personal Effects Coverage** (+$3/day)\n🚗 **Premium Protection** (+$8/day)\n\n**What's Covered:**\n• Vehicle repairs and replacement\n• Medical expenses\n• Personal belongings\n• Towing and emergency services\n\n**Deductible:** $200 (waived with Premium Protection)\n\nAll drivers must be 21+ with valid license. Need specific coverage details?`;
+                }
+                
+                // Requirements and documents
+                if (lowerMessage.includes('requirement') || lowerMessage.includes('document') || lowerMessage.includes('license') || lowerMessage.includes('age') || lowerMessage.includes('id') || lowerMessage.includes('need')) {
+                    return `📋 **Rental Requirements:**\n\n**Driver Requirements:**\n🆔 Valid driver's license (2+ years)\n🎂 Minimum age: 21 years\n💳 Major credit card in driver's name\n\n**Required Documents:**\n• Government-issued photo ID\n• Current driver's license\n• Credit card (Visa, MasterCard, Amex)\n• Proof of insurance (recommended)\n\n**International Drivers:**\n🌍 International Driving Permit (IDP)\n✈️ Valid passport\n🏠 Proof of return travel\n\n**Additional Fees:**\n• Under 25: $25/day young driver fee\n• Additional drivers: $10/day per driver\n• One-way rentals: $50-200 depending on distance\n\nHave questions about any specific requirements?`;
+                }
+                
+                // Fuel and mileage
+                if (lowerMessage.includes('fuel') || lowerMessage.includes('gas') || lowerMessage.includes('mileage') || lowerMessage.includes('mile') || lowerMessage.includes('petrol')) {
+                    return `⛽ **Fuel & Mileage Policy:**\n\n**Mileage:**\n🛣️ **Unlimited mileage** on all rentals\n🚗 No distance restrictions\n🗺️ Perfect for long trips and road trips\n\n**Fuel Policy:**\n⛽ **Full-to-Full**: Receive with full tank, return with full tank\n💰 **Prepaid Fuel**: Pay upfront, return with any amount\n🏪 **Refuel Service**: We'll refuel for you (+$15 + fuel cost)\n\n**Fuel-Efficient Options:**\n🌱 Hybrid vehicles available\n💡 Economy cars: 30-40 MPG\n🚙 SUVs: 25-30 MPG\n🏆 Luxury cars: 25-35 MPG\n\n**Fuel Stations:**\nWe'll provide you with a list of convenient fuel stations near your pickup location!`;
+                }
+                
+                // Cancellation and changes
+                if (lowerMessage.includes('cancel') || lowerMessage.includes('change') || lowerMessage.includes('modify') || lowerMessage.includes('reschedule') || lowerMessage.includes('refund')) {
+                    return `🔄 **Flexible Booking Policies:**\n\n**Cancellation:**\n✅ **Free cancellation** up to 24 hours before pickup\n⏰ **Same-day cancellation**: 50% refund\n❌ **No-show**: No refund\n\n**Modifications:**\n📅 **Date changes**: Free (subject to availability)\n📍 **Location changes**: Free within same city\n🚗 **Vehicle changes**: Free upgrade/downgrade\n\n**How to Cancel/Modify:**\n💻 Online through your booking account\n📞 Call us at +1 (555) 123-4567\n📧 Email: reservations@browniecarrental.com\n\n**Refund Process:**\n💳 Refunds processed within 3-5 business days\n📧 Email confirmation sent\n\n**Emergency Changes:**\n🚨 24/7 support for urgent modifications\n\nNeed help with a specific booking change?`;
+                }
+                
+                // Contact and support
+                if (lowerMessage.includes('contact') || lowerMessage.includes('phone') || lowerMessage.includes('email') || lowerMessage.includes('support') || lowerMessage.includes('help') || lowerMessage.includes('call')) {
+                    return `📞 **Contact & Support:**\n\n**24/7 Customer Support:**\n📞 **Phone**: +1 (555) 123-4567\n📧 **Email**: support@browniecarrental.com\n💬 **Live Chat**: Available on our website\n📱 **WhatsApp**: +1 (555) 123-4567\n\n**Department-Specific:**\n🎫 **Reservations**: reservations@browniecarrental.com\n🛠️ **Roadside Assistance**: +1 (555) 911-HELP\n💼 **Corporate Rentals**: corporate@browniecarrental.com\n💰 **Billing**: billing@browniecarrental.com\n\n**Response Times:**\n📞 Phone: Immediate\n📧 Email: Within 2 hours\n💬 Chat: Within 30 seconds\n\n**Emergency Support:**\n🚨 24/7 roadside assistance\n🔧 Breakdown service\n🚗 Vehicle replacement\n\nHow can I connect you with the right support team?`;
+                }
+                
+                // Payment and billing
+                if (lowerMessage.includes('payment') || lowerMessage.includes('pay') || lowerMessage.includes('credit') || lowerMessage.includes('debit') || lowerMessage.includes('card') || lowerMessage.includes('bill') || lowerMessage.includes('charge')) {
+                    return `💳 **Payment & Billing:**\n\n**Accepted Payment Methods:**\n💳 Visa, MasterCard, American Express\n💰 Debit cards (with credit function)\n🏦 Bank transfers (advance bookings)\n📱 Digital wallets (Apple Pay, Google Pay)\n\n**Payment Process:**\n🔒 **Security deposit**: $200-500 (held, not charged)\n💰 **Rental payment**: At pickup or online\n⛽ **Fuel charges**: At return (if applicable)\n🚗 **Damage fees**: If applicable\n\n**Billing Timeline:**\n📅 **Reservation**: Immediate hold\n🚗 **Pickup**: Final payment processed\n🔄 **Return**: Deposit released (1-3 business days)\n\n**Additional Charges:**\n🚫 **Late return**: $25/hour\n🧽 **Cleaning fee**: $50 (excessive mess)\n🚭 **Smoking fee**: $200\n\n**Billing Questions?**\nContact our billing department at billing@browniecarrental.com`;
+                }
+                
+                // Thanks and positive responses
+                if (lowerMessage.includes('thank') || lowerMessage.includes('appreciate') || lowerMessage.includes('great') || lowerMessage.includes('awesome') || lowerMessage.includes('perfect')) {
+                    const thankResponses = [
+                        'You\'re very welcome! 😊 I\'m here to help make your car rental experience as smooth as possible. Is there anything else you\'d like to know?',
+                        'My pleasure! I\'m glad I could help. Feel free to ask if you have any other questions about our services!',
+                        'Thank you for choosing Brownie Car Rental! I\'m always here to assist you. What else can I help you with today?'
+                    ];
+                    return thankResponses[Math.floor(Math.random() * thankResponses.length)];
+                }
+                
+                // Human agent request
+                if (lowerMessage.includes('human') || lowerMessage.includes('agent') || lowerMessage.includes('representative') || lowerMessage.includes('speak') || lowerMessage.includes('talk') || lowerMessage.includes('person')) {
+                    return `👤 **Connect with Human Agent:**\n\nI understand you'd like to speak with a human representative. I'll connect you with our support team right away!\n\n**Available Support:**\n👨‍💼 **Sales specialists** (car selection & bookings)\n🛠️ **Technical support** (website & app issues)\n💰 **Billing specialists** (payment & refunds)\n🚗 **Customer service** (general inquiries)\n\n**Connection Options:**\n📞 **Immediate call**: +1 (555) 123-4567\n💬 **Live chat**: Transferring now...\n📧 **Email**: support@browniecarrental.com\n\n⏰ **Current wait time**: Less than 2 minutes\n\nOne moment while I connect you with the best available agent for your needs!`;
+                }
+                
+                // Complaint or problem
+                if (lowerMessage.includes('problem') || lowerMessage.includes('issue') || lowerMessage.includes('complaint') || lowerMessage.includes('wrong') || lowerMessage.includes('error') || lowerMessage.includes('bad') || lowerMessage.includes('terrible')) {
+                    return `😔 **I'm sorry to hear about your concern.**\n\nI want to help resolve this issue for you right away. \n\n**For immediate assistance:**\n📞 **Priority support**: +1 (555) 123-4567\n📧 **Complaint resolution**: complaints@browniecarrental.com\n💬 **Urgent chat**: I'll connect you with a senior agent\n\n**What I can help with:**\n🔧 Technical issues\n💰 Billing problems\n🚗 Vehicle concerns\n📅 Booking issues\n\n**Your satisfaction is our priority.** Our team will work quickly to resolve your concern and ensure you have a great experience.\n\nShall I connect you with our customer resolution team immediately?`;
+                }
+                
+                // Special offers and discounts
+                if (lowerMessage.includes('discount') || lowerMessage.includes('offer') || lowerMessage.includes('deal') || lowerMessage.includes('promotion') || lowerMessage.includes('coupon') || lowerMessage.includes('sale')) {
+                    return `🎉 **Special Offers & Discounts:**\n\n**Current Promotions:**\n🏆 **New Customer**: 20% off first rental\n📅 **Weekly Rentals**: 15% off (7+ days)\n🎊 **Monthly Rentals**: 25% off (30+ days)\n👥 **Loyalty Program**: Earn points for discounts\n\n**Seasonal Offers:**\n🌞 **Summer Special**: Free GPS with any rental\n🏖️ **Weekend Getaway**: $99 for 2-day rentals\n🎄 **Holiday Discounts**: Up to 30% off\n\n**Corporate Discounts:**\n💼 **Business accounts**: 15% off all rentals\n🏢 **Volume discounts**: Contact for custom rates\n\n**How to Apply:**\n💻 Use promo code at checkout\n📞 Mention offer when booking by phone\n📧 Email us for custom discount codes\n\n**Current Promo Code**: SAVE20 (20% off your next rental)\n\nWould you like help applying a discount to your booking?`;
+                }
+                
+                // Default response for unrecognized queries
+                return `I'm here to help you with all aspects of car rental! 🚗\n\nI can assist you with:\n\n🚗 **Vehicle Information** (types, features, availability)\n💰 **Pricing & Rates** (daily rates, discounts, packages)\n📅 **Booking & Reservations** (new bookings, modifications)\n📍 **Locations & Pickup** (offices, delivery, hours)\n🛡️ **Insurance & Coverage** (protection options)\n💳 **Payment & Billing** (methods, charges, refunds)\n📋 **Requirements** (documents, age, licenses)\n🔄 **Cancellations & Changes** (policies, modifications)\n\n**Need human help?** Just ask to speak with an agent!\n\nWhat specific information would you like to know about our car rental services?`;
+            }
+            
+            function handleIncomingMessage(data) {
+                hideTypingIndicator();
+                
+                if (data.type === 'chat_message') {
+                    addMessageToChat(data.message, data.sender, data.sender_type, data.timestamp);
+                } else if (data.type === 'escalation_notification') {
+                    showEscalationNotice();
+                    currentRoomStatus = 'pending_escalation';
+                } else if (data.type === 'agent_joined') {
+                    showAgentJoinedNotice(data.agent_name);
+                    currentRoomStatus = 'active';
+                }
+            }
+            
+            function addMessageToChat(message, sender, senderType, timestamp) {
+                const messageElement = document.createElement('div');
+                messageElement.className = `chat-message ${senderType}`;
+                
+                const avatarElement = document.createElement('div');
+                avatarElement.className = `message-avatar ${senderType}`;
+                avatarElement.innerHTML = getAvatarIcon(senderType);
+                
+                const bubbleElement = document.createElement('div');
+                bubbleElement.className = 'message-bubble';
+                bubbleElement.innerHTML = escapeHtml(message).replace(/\n/g, '<br>');
+                
+                if (senderType === 'user') {
+                    messageElement.appendChild(bubbleElement);
+                } else {
+                    messageElement.appendChild(avatarElement);
+                    messageElement.appendChild(bubbleElement);
+                }
+                
+                chatMessages.appendChild(messageElement);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+            
+            function getAvatarIcon(senderType) {
+                switch(senderType) {
+                    case 'bot': return '<i class="fas fa-robot"></i>';
+                    case 'user': return '<i class="fas fa-user"></i>';
+                    case 'agent': return '<i class="fas fa-headset"></i>';
+                    case 'system': return '<i class="fas fa-cog"></i>';
+                    default: return '<i class="fas fa-user"></i>';
+                }
+            }
+            
+            function showTypingIndicator() {
+                document.querySelector('.chat-typing').classList.remove('d-none');
+            }
+            
+            function hideTypingIndicator() {
+                document.querySelector('.chat-typing').classList.add('d-none');
+            }
+            
+            function showEscalationNotice() {
+                const noticeElement = document.createElement('div');
+                noticeElement.className = 'chat-message bot';
+                noticeElement.innerHTML = `
+                    <div class="message-avatar bot"><i class="fas fa-user-tie"></i></div>
+                    <div class="message-bubble">
+                        <strong>Connecting you with a human agent...</strong><br>
+                        Please wait while we transfer you to one of our support agents.
+                    </div>
+                `;
+                chatMessages.appendChild(noticeElement);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+            
+            function showAgentJoinedNotice(agentName) {
+                const noticeElement = document.createElement('div');
+                noticeElement.className = 'chat-message bot';
+                noticeElement.innerHTML = `
+                    <div class="message-avatar bot"><i class="fas fa-user-check"></i></div>
+                    <div class="message-bubble">
+                        <strong>${agentName} has joined the conversation</strong><br>
+                        You are now connected with a human support agent.
+                    </div>
+                `;
+                chatMessages.appendChild(noticeElement);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+                
+                // Update header to show agent name
+                document.querySelector('.chat-header h6').textContent = `Agent: ${agentName}`;
+            }
+            
+            function showWelcomeMessage() {
+                const welcomeMessage = {
+                    message: "Hello! I'm your virtual assistant for Brownie Car Rental. I can help you with car bookings, pricing, availability, and general support. How can I assist you today?",
+                    sender: "Bot Assistant",
+                    sender_type: "bot",
+                    timestamp: new Date().toISOString()
+                };
+                addMessageToChat(welcomeMessage.message, welcomeMessage.sender, welcomeMessage.sender_type, welcomeMessage.timestamp);
+            }
+            
+            function escapeHtml(text) {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Receipt</title>
+    <style>
+        /* Add your styles here for the PDF */
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            width: 100%;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .content {
+            margin-bottom: 20px;
+        }
+        .content p {
+            margin: 0;
+            padding: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Booking Receipt</h1>
+        </div>
+        <div class="content">
+            <p><strong>Order Id:</strong> {{ detail.id }}</p>
+            <p><strong>Car Name:</strong> {{ detail.car_name }}</p>
+            <p><strong>Dealer Name:</strong> {{ detail.dealer_name }}</p>
+            <p><strong>Customer Name:</strong> {{ user.first_name }} {{ user.last_name }}</p>
+            <p><strong>Customer Email:</strong> {{ user.email }}</p>
+            <p><strong>Customer Phone:</strong> {{ detail.cell_no }}</p>
+            <p><strong>Address:</strong> {{ detail.address }}</p>
+            <p><strong>From:</strong> {{ detail.date_from }}</p>
+            <p><strong>To:</strong> {{ detail.date_to }}</p>
+        </div>
+    </div>
+</body>
+</html>

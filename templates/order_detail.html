@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+{% block title %} Order Detail {% endblock %}
+
+{% block body %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-lg">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-check-circle me-2"></i>Booking Confirmed
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-success" role="alert">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Your booking was successful!</strong> We will contact you soon regarding your booking.
+                    </div>
+                    
+                    <h5 class="mb-4">
+                        <i class="fas fa-clipboard-list me-2"></i>Booking Details
+                    </h5>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="info-item mb-3">
+                                <strong>Order ID:</strong> #{{ detail.id }}
+                            </div>
+                            <div class="info-item mb-3">
+                                <strong>Car Name:</strong> {{ detail.car_name }}
+                            </div>
+                            <div class="info-item mb-3">
+                                <strong>Dealer Name:</strong> {{ detail.dealer_name }}
+                            </div>
+                            <div class="info-item mb-3">
+                                <strong>Customer Name:</strong> {{ user.first_name }} {{ user.last_name }}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-item mb-3">
+                                <strong>Email:</strong> {{ user.email }}
+                            </div>
+                            <div class="info-item mb-3">
+                                <strong>Phone:</strong> {{ detail.cell_no }}
+                            </div>
+                            <div class="info-item mb-3">
+                                <strong>Address:</strong> {{ detail.address }}
+                            </div>
+                            <div class="info-item mb-3">
+                                <strong>Rental Period:</strong> {{ detail.date_from }} to {{ detail.date_to }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="d-flex justify-content-end gap-2">
+                        {% if user.is_authenticated and user.is_superuser %}
+                            <a href="{% url 'order_list' %}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-1"></i>Back
+                            </a>
+                            <a href="{% url 'system:generate_receipt' detail.id %}" class="btn btn-warning">
+                                <i class="fas fa-print me-1"></i>Print Receipt
+                            </a>
+                            <a href="{% url 'order_delete' detail.id %}" class="btn btn-danger" onclick="return confirm('Are you sure you want to cancel this booking?')">
+                                <i class="fas fa-times me-1"></i>Cancel Booking
+                            </a>
+                        {% else %}
+                            <a href="{% url 'order_edit' detail.id %}" class="btn btn-info">
+                                <i class="fas fa-edit me-1"></i>Edit Booking
+                            </a>
+                            <a href="{% url 'system:generate_receipt' detail.id %}" class="btn btn-warning">
+                                <i class="fas fa-print me-1"></i>Print Receipt
+                            </a>
+                            <a href="{% url 'order_delete' detail.id %}" class="btn btn-danger" onclick="return confirm('Are you sure you want to cancel this booking?')">
+                                <i class="fas fa-times me-1"></i>Cancel Booking
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% comment %} <div class ='col-sm-6 col-sm-offset-3'>
+  <strong><p style="color: red">Your booking was successfully.We will contact you soon regarding your booking.Your booking details are as bellow
+  </p></strong>
+  <p class="list-group-item active">
+    <strong><span class="glyphicon glyphicon-tag"></span> Booking Detail</strong>
+  </p>
+  <a href="" class="list-group-item"><strong>Order Id: </strong>{{ detail.id }}</a><br>
+  <a href="" class="list-group-item"><strong>Car name: </strong>{{ detail.car_name }}</a>
+  <a href="" class="list-group-item"><strong>Dealer name: </strong>{{ detail.dealer_name }}</a>
+  <a href="" class="list-group-item"><strong>Customer name: </strong>{{ user.first_name }} {{ user.last_name }}</a>
+  <a href="" class="list-group-item"><strong>Customer email: </strong>{{ user.email }}</a>
+  <a href="" class="list-group-item"><strong>Customer Phone: </strong>{{ detail.cell_no }}</a>
+  <a href="" class="list-group-item"><strong>Address: </strong>{{ detail.address }}</a>
+  <a href="" class="list-group-item"><strong>From: </strong>{{ detail.date_from }}</a>
+  <a href="" class="list-group-item"><strong>To: </strong>{{ detail.date_to }}</a><br>
+  
+ <div class="pull-right">
+    {% if user.is_authenticated and user.is_superuser %}
+    <a href="{% url 'order_list'  %}"><button type="button" class="btn btn-danger"><span class="glyphicon glyphicon-arrow-left"></span> Back</button></a>
+    <a href="{% url 'order_delete' detail.id %}"><button type="button" class="btn btn-danger"><span class="glyphicon glyphicon-remove"></span> Cancel Booking</button></a>
+    <a href="{% url 'html_receipt' detail.id %}"><button type="button" class="btn btn-warning"><span class="glyphicon glyphicon-print"></span> Print</button></a>
+    {% else %}
+    <a href="{% url 'order_edit' detail.id %}"><button type="button" class="btn btn-info"><span class="glyphicon glyphicon-pencil"></span> Edit Booking</button></a>
+    <a href="{% url 'order_delete' detail.id %}"><button type="button" class="btn btn-danger"><span class="glyphicon glyphicon-remove"></span> Cancel Booking</button></a>
+    <a href="{% url 'html_receipt' detail.id %}"><button type="button" class="btn btn-warning"><span class="glyphicon glyphicon-print"></span> Print</button></a>
+
+    {% endif %}
+    
+  </div>
+</div> {% endcomment %}
+
+{% endblock %}

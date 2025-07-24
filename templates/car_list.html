@@ -1,0 +1,651 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Car List - Browse Our Premium Fleet{% endblock %}
+
+
+{% block body %}
+<!-- Hero Section -->
+<section class="hero-section py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8 mx-auto text-center" data-aos="fade-up">
+                <h1 class="hero-title mb-4">Premium Car Collection</h1>
+                <p class="hero-subtitle mb-4">Discover our extensive fleet of luxury vehicles, perfect for every occasion</p>
+                <div class="hero-stats d-flex justify-content-center gap-4 flex-wrap">
+                    <div class="stat-item">
+                        <i class="fas fa-car text-primary"></i>
+                        <span class="stat-number">{{ car.paginator.count }}+</span>
+                        <span class="stat-label">Premium Cars</span>
+                    </div>
+                    <div class="stat-item">
+                        <i class="fas fa-shield-alt text-success"></i>
+                        <span class="stat-number">100%</span>
+                        <span class="stat-label">Insured</span>
+                    </div>
+                    <div class="stat-item">
+                        <i class="fas fa-clock text-info"></i>
+                        <span class="stat-number">24/7</span>
+                        <span class="stat-label">Support</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Car Grid Section -->
+<section class="car-grid-section py-5">
+    <div class="container">
+        {% if car %}
+            <div class="row g-4">
+                {% for ob in car %}
+                    <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:1|add:100 }}">
+                        <div class="modern-car-card">
+                            <div class="car-image-container">
+                                {% if ob.image %}
+                                    <img src="{{ ob.image.url }}" 
+                                         class="car-image" 
+                                         alt="{{ ob.car_name }}"
+                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                                    <div class="no-image-placeholder" style="display: none;">
+                                        <i class="fas fa-car fa-3x text-muted"></i>
+                                        <p class="mt-2 text-muted">No Image Available</p>
+                                    </div>
+                                {% else %}
+                                    <div class="no-image-placeholder">
+                                        <i class="fas fa-car fa-3x text-muted"></i>
+                                        <p class="mt-2 text-muted">No Image Available</p>
+                                    </div>
+                                {% endif %}
+                                <div class="car-overlay">
+                                    <div class="overlay-content">
+                                        <a href="{% url 'system:car_detail' ob.id %}" class="btn btn-white btn-sm">
+                                            <i class="fas fa-eye me-2"></i>View Details
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="like-badge">
+                                    <button class="like-button" data-id="{{ ob.id }}" data-url="{% url 'system:like' ob.id %}">
+                                        <i class="fas fa-heart"></i>
+                                        <span class="like-count">{{ ob.like }}</span>
+                                    </button>
+                                </div>
+                                {% csrf_token %}
+                            </div>
+                            <div class="car-content">
+                                <div class="car-header">
+                                    <h5 class="car-name">{{ ob.car_name }}</h5>
+                                    <div class="car-company">
+                                        <i class="fas fa-building me-1"></i>{{ ob.company_name }}
+                                    </div>
+                                </div>
+                                <div class="car-specs">
+                                    <div class="spec-item">
+                                        <i class="fas fa-users text-primary"></i>
+                                        <span>{{ ob.num_of_seats }} Seats</span>
+                                    </div>
+                                    <div class="spec-item">
+                                        <i class="fas fa-shield-alt text-success"></i>
+                                        <span>Fully Insured</span>
+                                    </div>
+                                </div>
+                                <div class="car-footer">
+                                    <div class="price-section">
+                                        <span class="price">${{ ob.cost_par_day }}</span>
+                                        <span class="price-period">per day</span>
+                                    </div>
+                                </div>
+                                <div class="car-actions">
+                                    <div class="action-buttons">
+                                        {% if user.is_authenticated %}
+                                            <a href="{% url 'system:order_create' %}" class="btn btn-primary btn-action">
+                                                <i class="fas fa-calendar-check me-1"></i>Book Now
+                                            </a>
+                                        {% else %}
+                                            <a href="{% url 'login' %}" class="btn btn-outline-primary btn-action">
+                                                <i class="fas fa-sign-in-alt me-1"></i>Login to Book
+                                            </a>
+                                        {% endif %}
+                                        <a href="{% url 'system:car_detail' ob.id %}" class="btn btn-outline-secondary btn-action">
+                                            <i class="fas fa-info-circle me-1"></i>Details
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="no-cars-section text-center py-5">
+                <div class="no-cars-icon mb-4">
+                    <i class="fas fa-car fa-4x text-muted"></i>
+                </div>
+                <h3 class="text-muted mb-3">No Cars Available</h3>
+                <p class="text-muted mb-4">We're sorry, but there are no cars matching your criteria at the moment.</p>
+                <a href="{% url 'home' %}" class="btn btn-primary">
+                    <i class="fas fa-home me-2"></i>Return Home
+                </a>
+            </div>
+        {% endif %}
+
+        <!-- Modern Pagination -->
+        {% if car.paginator.num_pages > 1 %}
+            <div class="pagination-section mt-5">
+                <nav aria-label="Car list pagination">
+                    <ul class="pagination justify-content-center">
+                        {% if car.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ car.previous_page_number }}">
+                                    <i class="fas fa-chevron-left me-1"></i>Previous
+                                </a>
+                            </li>
+                        {% endif %}
+                        
+                        {% for num in car.paginator.page_range %}
+                            {% if car.number == num %}
+                                <li class="page-item active">
+                                    <span class="page-link">{{ num }}</span>
+                                </li>
+                            {% elif num > car.number|add:'-3' and num < car.number|add:'3' %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if car.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ car.next_page_number }}">
+                                    Next<i class="fas fa-chevron-right ms-1"></i>
+                                </a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                <div class="pagination-info text-center mt-3">
+                    <small class="text-muted">
+                        Showing page {{ car.number }} of {{ car.paginator.num_pages }} 
+                        ({{ car.paginator.count }} total cars)
+                    </small>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Hero Section */
+.hero-section {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.hero-title {
+    font-size: 3rem;
+    font-weight: 800;
+    color: white;
+    margin-bottom: 1.5rem;
+    position: relative;
+    z-index: 2;
+}
+
+.hero-subtitle {
+    font-size: 1.3rem;
+    color: rgba(255, 255, 255, 0.9);
+    max-width: 600px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 2;
+}
+
+.hero-stats {
+    margin-top: 2rem;
+    position: relative;
+    z-index: 2;
+}
+
+.stat-item {
+    text-align: center;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    backdrop-filter: blur(10px);
+    transition: transform 0.3s ease;
+}
+
+.stat-item:hover {
+    transform: translateY(-5px);
+}
+
+.stat-item i {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    display: block;
+    color: white;
+}
+
+.stat-number {
+    display: block;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: white;
+}
+
+.stat-label {
+    display: block;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.8);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Modern Car Cards */
+.modern-car-card {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.modern-car-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+.car-image-container {
+    position: relative;
+    height: 250px;
+    overflow: hidden;
+}
+
+.car-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.modern-car-card:hover .car-image {
+    transform: scale(1.1);
+}
+
+.no-image-placeholder {
+    height: 100%;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.car-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, rgba(102, 126, 234, 0.9) 0%, rgba(118, 75, 162, 0.9) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.modern-car-card:hover .car-overlay {
+    opacity: 1;
+}
+
+.btn-white {
+    background: white;
+    color: #667eea;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 50px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.btn-white:hover {
+    background: #f8f9fa;
+    color: #667eea;
+    transform: scale(1.05);
+}
+
+.like-badge {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    z-index: 10;
+}
+
+.like-button {
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    border-radius: 50px;
+    padding: 0.5rem 1rem;
+    color: #e11d48;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+.like-button:hover {
+    background: white;
+    transform: scale(1.1);
+}
+
+.like-button.liked {
+    background: #e11d48;
+    color: white;
+}
+
+/* Car Content */
+.car-content {
+    padding: 1.5rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.car-name {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 0.5rem;
+}
+
+.car-company {
+    color: #667eea;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+}
+
+.car-specs {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.spec-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    color: #6b7280;
+}
+
+.spec-item i {
+    font-size: 1rem;
+}
+
+.car-footer {
+    margin-top: auto;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.price-section {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.price {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #667eea;
+}
+
+.price-period {
+    font-size: 0.8rem;
+    color: #6b7280;
+}
+
+/* Car Actions Section */
+.car-actions {
+    padding: 0 1.5rem 1.5rem;
+    margin-top: 0;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.btn-action {
+    flex: 1;
+    min-width: 120px;
+    padding: 0.75rem 1rem;
+    border-radius: 10px;
+    font-weight: 600;
+    text-decoration: none;
+    text-align: center;
+    transition: all 0.3s ease;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.btn-action:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    text-decoration: none;
+}
+
+.btn-primary.btn-action {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    color: white;
+}
+
+.btn-primary.btn-action:hover {
+    background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+    color: white;
+}
+
+.btn-outline-primary.btn-action {
+    border: 2px solid #667eea;
+    color: #667eea;
+    background: transparent;
+}
+
+.btn-outline-primary.btn-action:hover {
+    background: #667eea;
+    color: white;
+}
+
+.btn-outline-secondary.btn-action {
+    border: 2px solid #6b7280;
+    color: #6b7280;
+    background: transparent;
+}
+
+.btn-outline-secondary.btn-action:hover {
+    background: #6b7280;
+    color: white;
+}
+
+/* No Cars Section */
+.no-cars-section {
+    min-height: 400px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.no-cars-icon {
+    opacity: 0.6;
+}
+
+/* Pagination */
+.pagination-section {
+    margin-top: 3rem;
+}
+
+.pagination .page-link {
+    border: none;
+    color: #667eea;
+    font-weight: 500;
+    margin: 0 0.25rem;
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    transition: all 0.3s ease;
+}
+
+.pagination .page-link:hover {
+    background: #667eea;
+    color: white;
+    transform: translateY(-2px);
+}
+
+.pagination .page-item.active .page-link {
+    background: #667eea;
+    border-color: #667eea;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .hero-title {
+        font-size: 2.5rem;
+    }
+    
+    .hero-stats {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .stat-item {
+        margin-bottom: 1rem;
+    }
+    
+    .car-footer {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: stretch;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    .btn-action {
+        min-width: auto;
+        width: 100%;
+    }
+    
+    .car-content {
+        padding: 1rem;
+    }
+    
+    .car-actions {
+        padding: 0 1rem 1rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Like button functionality
+    const likeButtons = document.querySelectorAll('.like-button');
+    
+    likeButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            const carId = this.dataset.id;
+            const url = this.dataset.url;
+            const likeCount = this.querySelector('.like-count');
+            
+            // Add loading state
+            this.style.opacity = '0.6';
+            this.style.pointerEvents = 'none';
+            
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value || '{{ csrf_token }}'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                likeCount.textContent = data.likes;
+                
+                // Add liked animation
+                this.classList.add('liked');
+                setTimeout(() => {
+                    this.classList.remove('liked');
+                }, 300);
+                
+                // Remove loading state
+                this.style.opacity = '1';
+                this.style.pointerEvents = 'auto';
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                // Remove loading state
+                this.style.opacity = '1';
+                this.style.pointerEvents = 'auto';
+            });
+        });
+    });
+    
+    // Smooth scroll animations for cards
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+    
+    const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, observerOptions);
+    
+    // Observe car cards for animation
+    const carCards = document.querySelectorAll('.modern-car-card');
+    carCards.forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(30px)';
+        card.style.transition = `all 0.6s ease ${index * 0.1}s`;
+        observer.observe(card);
+    });
+});
+</script>
+{% endblock %}

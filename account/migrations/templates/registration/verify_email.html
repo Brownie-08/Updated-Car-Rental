@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block title %}Verify Email{% endblock %}
+
+{% block body %}
+<div class="container" style="margin-top: 15px;">
+    <h2>Verify Your Email</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Verify</button>
+    </form>
+</div>
+{% endblock %}

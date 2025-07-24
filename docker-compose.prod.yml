@@ -1,0 +1,211 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database - Production
+  db:
+    image: postgres:15-alpine
+    restart: always
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+      - ./backups:/backups
+    environment:
+      POSTGRES_DB: ${DB_NAME:-car_rental_db}
+      POSTGRES_USER: ${DB_USER:-car_rental_user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --lc-collate=en_US.UTF-8 --lc-ctype=en_US.UTF-8"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-car_rental_user} -d ${DB_NAME:-car_rental_db}"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    networks:
+      - car_rental_network
+    # Don't expose database port in production
+    # ports:
+    #   - "5432:5432"
+
+  # Django Web Application - Production
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: base
+    restart: always
+    volumes:
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+      - logs_volume:/app/logs
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env.prod
+    environment:
+      - DJANGO_SETTINGS_MODULE=brownie_car_rent.settings.production
+      - DB_ENGINE=django.db.backends.postgresql
+      - DB_NAME=${DB_NAME:-car_rental_db}
+      - DB_USER=${DB_USER:-car_rental_user}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_HOST=db
+      - DB_PORT=5432
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/0
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: >
+      sh -c "echo 'Running production migrations...' &&
+             python manage.py migrate &&
+             python manage.py collectstatic --noinput &&
+             echo 'Creating superuser if needed...' &&
+             python manage.py shell -c \"
+from django.contrib.auth import get_user_model;
+User = get_user_model();
+if not User.objects.filter(username='admin').exists():
+    User.objects.create_superuser('admin', 'admin@carental.com', 'admin123');
+    print('Superuser created successfully')
+else:
+    print('Superuser already exists')
+\" &&
+             echo 'Starting Gunicorn server...' &&
+             gunicorn --bind 0.0.0.0:8000 --workers 4 --worker-class sync --worker-connections 1000 --max-requests 1000 --max-requests-jitter 100 --timeout 30 --keep-alive 5 --log-level info --access-logfile /app/logs/access.log --error-logfile /app/logs/error.log brownie_car_rent.wsgi:application"
+    networks:
+      - car_rental_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # Nginx Reverse Proxy
+  nginx:
+    image: nginx:alpine
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - static_volume:/app/staticfiles:ro
+      - media_volume:/app/media:ro
+      - ./docker/nginx/ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - web
+    networks:
+      - car_rental_network
+
+  # Redis for caching and Celery - Production
+  redis:
+    image: redis:7-alpine
+    restart: always
+    volumes:
+      - redis_data:/data
+      - ./docker/redis/redis.conf:/etc/redis/redis.conf:ro
+    command: redis-server /etc/redis/redis.conf
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - car_rental_network
+    # Don't expose Redis port in production
+    # ports:
+    #   - "6379:6379"
+
+  # Celery Worker - Production
+  celery:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: base
+    restart: always
+    volumes:
+      - media_volume:/app/media
+      - logs_volume:/app/logs
+    env_file:
+      - .env.prod
+    environment:
+      - DJANGO_SETTINGS_MODULE=brownie_car_rent.settings.production
+      - DB_ENGINE=django.db.backends.postgresql
+      - DB_NAME=${DB_NAME:-car_rental_db}
+      - DB_USER=${DB_USER:-car_rental_user}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_HOST=db
+      - DB_PORT=5432
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/0
+    depends_on:
+      - db
+      - redis
+    command: celery -A brownie_car_rent worker -l info --logfile=/app/logs/celery.log
+    networks:
+      - car_rental_network
+
+  # Celery Beat - Production
+  celery-beat:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: base
+    restart: always
+    volumes:
+      - media_volume:/app/media
+      - logs_volume:/app/logs
+    env_file:
+      - .env.prod
+    environment:
+      - DJANGO_SETTINGS_MODULE=brownie_car_rent.settings.production
+      - DB_ENGINE=django.db.backends.postgresql
+      - DB_NAME=${DB_NAME:-car_rental_db}
+      - DB_USER=${DB_USER:-car_rental_user}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_HOST=db
+      - DB_PORT=5432
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/0
+    depends_on:
+      - db
+      - redis
+    command: celery -A brownie_car_rent beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler --logfile=/app/logs/celery-beat.log
+    networks:
+      - car_rental_network
+
+  # Celery Flower for monitoring (optional)
+  flower:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: base
+    restart: always
+    ports:
+      - "5555:5555"
+    environment:
+      - DJANGO_SETTINGS_MODULE=brownie_car_rent.settings.production
+      - CELERY_BROKER_URL=redis://redis:6379/0
+    depends_on:
+      - redis
+    command: celery -A brownie_car_rent flower --port=5555
+    networks:
+      - car_rental_network
+
+volumes:
+  postgres_data:
+    driver: local
+  static_volume:
+    driver: local
+  media_volume:
+    driver: local
+  redis_data:
+    driver: local
+  logs_volume:
+    driver: local
+
+networks:
+  car_rental_network:
+    driver: bridge

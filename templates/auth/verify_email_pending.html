@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Check Your Email - Brownie Car Rental{% endblock %}
+
+{% block body %}
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+        <div class="advanced-login-card">
+            <div class="login-header">
+                <div class="login-icon">
+                    <i class="fas fa-envelope"></i>
+                </div>
+                <h2 class="login-title">Check Your Email</h2>
+                <p class="login-subtitle">We've sent a verification code to your email address</p>
+            </div>
+            <div class="login-body">
+                <div class="text-center">
+                    <div class="mb-4">
+                        <i class="fas fa-paper-plane fa-3x text-primary mb-3"></i>
+                        <h5>Verification Email Sent!</h5>
+                        <p class="text-muted">Please check your inbox and spam folder for a verification email from Brownie Car Rental.</p>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'verify_email' %}" class="btn btn-gradient">
+                            <i class="fas fa-key me-2"></i>Enter Verification Code
+                        </a>
+                        <a href="{% url 'resend_verification' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-redo me-2"></i>Resend Email
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="login-links">
+                    <p class="forgot-link"><a href="{% url 'login' %}" class="link-muted">Back to login</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

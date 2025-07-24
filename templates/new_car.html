@@ -1,0 +1,211 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}New Cars - Premium Fleet{% endblock %}
+
+{% block body %}
+{% csrf_token %}
+<!-- Page Header -->
+<div class="page-header-section">
+    <div class="container">
+        <div class="row align-items-center py-5">
+            <div class="col-lg-8">
+                <h1 class="page-title">
+                    <i class="fas fa-car-alt me-3"></i>New Car Collection
+                </h1>
+                <p class="page-subtitle">Discover our latest premium vehicles added to our fleet</p>
+            </div>
+            <div class="col-lg-4 text-lg-end">
+                <div class="page-actions">
+                    <a href="{% url 'system:popularcar' %}" class="btn btn-outline-light me-2">
+                        <i class="fas fa-star me-2"></i>Popular Cars
+                    </a>
+                    <a href="{% url 'system:contact' %}" class="btn btn-light">
+                        <i class="fas fa-envelope me-2"></i>Contact
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Car Grid Section -->
+<section class="cars-section py-5">
+    <div class="container">
+        {% if car %}
+            <div class="row g-4">
+                {% for ob in car %}
+                    <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:1|add:100 }}">
+                        <div class="modern-car-card">
+                            <div class="car-image-container">
+                                {% if ob.image %}
+                                    <img src='{{ ob.image.url }}' class="car-image" alt="{{ ob.car_name }}"/>
+                                {% else %}
+                                    <div class="no-image-placeholder">
+                                        <i class="fas fa-car fa-3x"></i>
+                                        <p>No Image Available</p>
+                                    </div>
+                                {% endif %}
+                                <div class="car-overlay">
+                                    <div class="overlay-buttons">
+                                        <a href="{% url 'system:car_detail' ob.id %}" class="btn btn-light btn-sm me-2">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <button class="btn btn-danger btn-sm like-button" data-id="{{ ob.id }}" data-url="{% url 'system:like' ob.id %}">
+                                            <i class="fas fa-heart"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="car-badge">
+                                    <span class="badge bg-success">New</span>
+                                </div>
+                            </div>
+                            
+                            <div class="car-content">
+                                <div class="car-header">
+                                    <h5 class="car-title">{{ ob.car_name }}</h5>
+                                    <div class="car-rating">
+                                        <div class="stars">
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                        </div>
+                                        <span class="rating-text">(5.0)</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="car-details">
+                                    <div class="detail-item">
+                                        <i class="fas fa-building"></i>
+                                        <span>{{ ob.company_name }}</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <i class="fas fa-users"></i>
+                                        <span>{{ ob.num_of_seats }} Seats</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <i class="fas fa-heart text-danger"></i>
+                                        <span class="like-count">{{ ob.like }} Likes</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="car-footer">
+                                    <div class="car-price">
+                                        <span class="price-amount">${{ ob.cost_par_day }}</span>
+                                        <span class="price-period">/day</span>
+                                    </div>
+                                    <div class="car-actions">
+                                        <a href="{% url 'system:car_detail' ob.id %}" class="btn btn-outline-primary btn-sm me-2">
+                                            <i class="fas fa-info-circle me-1"></i>Details
+                                        </a>
+                                        <a href="{% url 'system:order_create_with_car' ob.id %}" class="btn btn-primary btn-sm">
+                                            <i class="fas fa-calendar-check me-1"></i>Book Now
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state text-center py-5">
+                <i class="fas fa-car fa-4x text-muted mb-4"></i>
+                <h3 class="text-muted mb-3">No Cars Found</h3>
+                <p class="text-muted mb-4">We're currently updating our fleet. Please check back soon for new additions!</p>
+                <a href="{% url 'system:car_list' %}" class="btn btn-primary">
+                    <i class="fas fa-list me-2"></i>View All Cars
+                </a>
+            </div>
+        {% endif %}
+        
+        <!-- Enhanced Pagination -->
+        {% if car.has_other_pages %}
+        <div class="pagination-container">
+            <div class="modern-pagination">
+                {% if car.has_previous %}
+                    <a href="?page={{ car.previous_page_number }}" class="pagination-btn">
+                        <i class="fas fa-chevron-left"></i> Previous
+                    </a>
+                {% endif %}
+                
+                <div class="pagination-info">
+                    Page {{ car.number }} of {{ car.paginator.num_pages }}
+                </div>
+                
+                {% if car.has_next %}
+                    <a href="?page={{ car.next_page_number }}" class="pagination-btn">
+                        Next <i class="fas fa-chevron-right"></i>
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Like button functionality
+    document.querySelectorAll('.like-button').forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            const carId = this.getAttribute('data-id');
+            const url = this.getAttribute('data-url');
+            
+            // Add loading state
+            this.style.opacity = '0.6';
+            this.style.pointerEvents = 'none';
+            
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value || '{{ csrf_token }}'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Update like count - look for it in the card content area
+                const card = this.closest('.modern-car-card');
+                const likeCount = card.querySelector('.like-count');
+                if (likeCount) {
+                    likeCount.textContent = data.likes + ' Likes';
+                }
+                
+                // Add visual feedback
+                this.style.transform = 'scale(1.2)';
+                setTimeout(() => {
+                    this.style.transform = 'scale(1)';
+                }, 200);
+                
+                // Remove loading state
+                this.style.opacity = '1';
+                this.style.pointerEvents = 'auto';
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to update like count. Please try again.');
+                
+                // Remove loading state
+                this.style.opacity = '1';
+                this.style.pointerEvents = 'auto';
+            });
+        });
+    });
+    
+    // Initialize AOS animations
+    if (typeof AOS !== 'undefined') {
+        AOS.init({
+            duration: 600,
+            easing: 'ease-in-out',
+            once: true,
+            offset: 100
+        });
+    }
+});
+</script>
+{% endblock %}

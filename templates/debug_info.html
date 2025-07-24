@@ -1,0 +1,141 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Information</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .section { margin: 20px 0; padding: 15px; border-left: 4px solid #007bff; background: #f8f9fa; }
+        .error { border-left-color: #dc3545; background: #f8d7da; }
+        .success { border-left-color: #28a745; background: #d4edda; }
+        .warning { border-left-color: #ffc107; background: #fff3cd; }
+        pre { background: #e9ecef; padding: 10px; overflow-x: auto; }
+        .test-btn { background: #007bff; color: white; border: none; padding: 10px 20px; cursor: pointer; margin: 5px; }
+    </style>
+</head>
+<body>
+    <h1>🔧 Car Rental Debug Information</h1>
+    
+    <div class="section">
+        <h3>🌐 Environment Info</h3>
+        <ul>
+            <li><strong>DEBUG:</strong> {{ debug }}</li>
+            <li><strong>STATIC_URL:</strong> {{ STATIC_URL }}</li>
+            <li><strong>MEDIA_URL:</strong> {{ MEDIA_URL }}</li>
+            <li><strong>User:</strong> {{ user }}</li>
+            <li><strong>User Authenticated:</strong> {{ user.is_authenticated }}</li>
+        </ul>
+    </div>
+    
+    <div class="section">
+        <h3>📊 Database Counts</h3>
+        <ul>
+            <li><strong>Cars:</strong> {{ car_count }}</li>
+            <li><strong>Orders:</strong> {{ order_count }}</li>
+            <li><strong>Users:</strong> {{ user_count }}</li>
+        </ul>
+    </div>
+    
+    <div class="section">
+        <h3>🎨 Static Files Test</h3>
+        <p>CSS Loading Test:</p>
+        <link rel="stylesheet" href="{% static 'css/style.css' %}">
+        <div style="color: var(--primary-color, red)">If this text is blue, CSS is loading properly</div>
+        
+        <p>Static URL Tests:</p>
+        <ul>
+            <li>Style.css: <a href="{% static 'css/style.css' %}" target="_blank">{% static 'css/style.css' %}</a></li>
+            <li>Optimized.css: <a href="{% static 'css/optimized.css' %}" target="_blank">{% static 'css/optimized.css' %}</a></li>
+        </ul>
+    </div>
+    
+    <div class="section">
+        <h3>🚗 Sample Car Data</h3>
+        {% if sample_cars %}
+            {% for car in sample_cars %}
+                <div style="border: 1px solid #ddd; margin: 10px 0; padding: 10px;">
+                    <strong>{{ car.car_name }}</strong> ({{ car.company_name }})<br>
+                    Price: ${{ car.cost_par_day }}/day | Seats: {{ car.num_of_seats }} | Likes: {{ car.like }}<br>
+                    {% if car.image %}
+                        <img src="{{ car.image.url }}" alt="{{ car.car_name }}" style="max-width: 200px; height: auto;">
+                    {% else %}
+                        <em>No image available</em>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="error">No cars found in database</div>
+        {% endif %}
+    </div>
+    
+    <div class="section">
+        <h3>🔗 URL Tests</h3>
+        <button class="test-btn" onclick="testUrl('/car/carlist/')">Test Car List</button>
+        <button class="test-btn" onclick="testUrl('/car/reviews/')">Test Reviews</button>
+        <button class="test-btn" onclick="testUrl('/car/booking/')">Test Booking</button>
+        <button class="test-btn" onclick="testUrl('/car/newcar/')">Test New Cars</button>
+        <button class="test-btn" onclick="testUrl('/car/popularcar/')">Test Popular Cars</button>
+        
+        <div id="url-test-results"></div>
+    </div>
+    
+    <div class="section">
+        <h3>🧪 JavaScript Test</h3>
+        <button onclick="runJSTest()">Test JavaScript</button>
+        <div id="js-test-result"></div>
+    </div>
+
+    <script>
+        function testUrl(url) {
+            fetch(url)
+                .then(response => {
+                    const resultDiv = document.getElementById('url-test-results');
+                    if (response.ok) {
+                        resultDiv.innerHTML += `<div class="success">✅ ${url} - OK (${response.status})</div>`;
+                    } else {
+                        resultDiv.innerHTML += `<div class="error">❌ ${url} - Error (${response.status})</div>`;
+                    }
+                })
+                .catch(error => {
+                    const resultDiv = document.getElementById('url-test-results');
+                    resultDiv.innerHTML += `<div class="error">❌ ${url} - Network Error: ${error.message}</div>`;
+                });
+        }
+        
+        function runJSTest() {
+            const result = document.getElementById('js-test-result');
+            try {
+                // Test basic JavaScript functionality
+                const testData = {
+                    time: new Date().toLocaleString(),
+                    userAgent: navigator.userAgent,
+                    viewportWidth: window.innerWidth,
+                    viewportHeight: window.innerHeight
+                };
+                result.innerHTML = `<div class="success">✅ JavaScript Working<br><pre>${JSON.stringify(testData, null, 2)}</pre></div>`;
+            } catch (error) {
+                result.innerHTML = `<div class="error">❌ JavaScript Error: ${error.message}</div>`;
+            }
+        }
+        
+        // Auto-run basic tests on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🔧 Debug page loaded successfully');
+            
+            // Test if jQuery is available (if used)
+            if (typeof $ !== 'undefined') {
+                console.log('✅ jQuery is loaded');
+            } else {
+                console.log('ℹ️ jQuery not loaded');
+            }
+            
+            // Test if Bootstrap is available (if used)
+            if (typeof bootstrap !== 'undefined') {
+                console.log('✅ Bootstrap JS is loaded');
+            } else {
+                console.log('ℹ️ Bootstrap JS not loaded or not available globally');
+            }
+        });
+    </script>
+</body>
+</html>

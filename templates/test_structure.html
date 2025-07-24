@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Test Structure - Brownie Car Rental{% endblock %}
+
+{% block body %}
+<div class="container my-5">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="text-center mb-4">Template Structure Test</h1>
+            <div class="alert alert-success">
+                <h4>✅ Template Inheritance Working</h4>
+                <p>This test page confirms that the base template structure is functional.</p>
+            </div>
+            
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Test Information</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Base Template:</strong> base.html</p>
+                    <p><strong>Block Used:</strong> {% verbatim %}{% block body %}{% endverbatim %}</p>
+                    <p><strong>Static Files:</strong> Loaded with {% verbatim %}{% load static %}{% endverbatim %}</p>
+                    
+                    <hr>
+                    
+                    <h6>Navigation Test:</h6>
+                    <div class="btn-group" role="group">
+                        <a href="{% url 'home' %}" class="btn btn-outline-primary">Home</a>
+                        <a href="{% url 'system:about' %}" class="btn btn-outline-primary">About</a>
+                        <a href="{% url 'system:services' %}" class="btn btn-outline-primary">Services</a>
+                        <a href="{% url 'system:car_list' %}" class="btn btn-outline-primary">Car List</a>
+                        <a href="{% url 'system:reviews' %}" class="btn btn-outline-primary">Reviews</a>
+                        <a href="{% url 'system:booking' %}" class="btn btn-outline-primary">Booking</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

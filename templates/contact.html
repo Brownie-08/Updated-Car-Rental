@@ -1,0 +1,329 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %} Contact Us {% endblock %}
+
+{% block extra_css %}
+<style>
+    .contact-hero {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .contact-hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.1);
+    }
+    
+    .hero-icon {
+        position: relative;
+        z-index: 2;
+        font-size: 4rem;
+        color: white;
+        margin-bottom: 2rem;
+    }
+    
+    .hero-title {
+        font-size: 3rem;
+        font-weight: 700;
+        color: white;
+        margin-bottom: 1.5rem;
+    }
+    
+    .hero-subtitle {
+        font-size: 1.2rem;
+        color: rgba(255, 255, 255, 0.9);
+        margin-bottom: 2rem;
+    }
+    
+    .hero-buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    .contact-card {
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        border: none;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        height: 100%;
+    }
+    
+    .contact-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    }
+    
+    .contact-icon {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+        font-size: 2rem;
+        color: white;
+    }
+    
+    .contact-title {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 1rem;
+    }
+    
+    .contact-text {
+        color: #666;
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+    }
+    
+    .contact-link {
+        color: #667eea;
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.3s ease;
+    }
+    
+    .contact-link:hover {
+        color: #5a67d8;
+    }
+    
+    .card {
+        border-radius: 15px;
+        border: none;
+    }
+    
+    .card-header {
+        border-radius: 15px 15px 0 0 !important;
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+    }
+    
+    @media (max-width: 768px) {
+        .hero-title {
+            font-size: 2.5rem;
+        }
+        
+        .hero-buttons {
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .contact-card {
+            margin-bottom: 2rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Initialize AOS animations
+    if (typeof AOS !== 'undefined') {
+        AOS.init({
+            duration: 800,
+            delay: 100,
+            once: true,
+            mirror: false
+        });
+    }
+</script>
+{% endblock %}
+
+{% block search %}
+{% endblock %}
+
+{% block body %}
+<!-- Contact Hero Section -->
+<section class="contact-hero py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="hero-content text-center" data-aos="fade-up">
+                    <div class="hero-icon mb-4">
+                        <i class="fas fa-envelope-open"></i>
+                    </div>
+                    <h1 class="hero-title mb-4">Get In Touch With Us</h1>
+                    <p class="hero-subtitle mb-5">Have questions about our premium car rental service? We're here to help you find the perfect vehicle for your journey.</p>
+                    <div class="hero-buttons">
+                        <a href="tel:+15551234567" class="btn btn-primary btn-lg me-3">
+                            <i class="fas fa-phone me-2"></i>Call Now
+                        </a>
+                        <a href="mailto:info@browniecarrental.com" class="btn btn-outline-primary btn-lg">
+                            <i class="fas fa-envelope me-2"></i>Email Us
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Contact Information Cards -->
+<section class="contact-info py-5 bg-light">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+            
+                <div class="row g-4">
+                    <!-- Location Card -->
+                    <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
+                        <div class="contact-card">
+                            <div class="contact-icon">
+                                <i class="fas fa-map-marker-alt"></i>
+                            </div>
+                            <div class="contact-content">
+                                <h5 class="contact-title">Visit Our Office</h5>
+                                <p class="contact-text">123 Car Rental Street<br>Downtown District<br>City, State 12345</p>
+                                <a href="https://maps.google.com" class="contact-link" target="_blank">
+                                    <i class="fas fa-external-link-alt me-1"></i>Get Directions
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Phone Card -->
+                    <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
+                        <div class="contact-card">
+                            <div class="contact-icon">
+                                <i class="fas fa-phone"></i>
+                            </div>
+                            <div class="contact-content">
+                                <h5 class="contact-title">Call Us Anytime</h5>
+                                <p class="contact-text">+1 (555) 123-4567<br>24/7 Customer Support<br>Emergency Assistance</p>
+                                <a href="tel:+15551234567" class="contact-link">
+                                    <i class="fas fa-phone me-1"></i>Call Now
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Email Card -->
+                    <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
+                        <div class="contact-card">
+                            <div class="contact-icon">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div class="contact-content">
+                                <h5 class="contact-title">Email Support</h5>
+                                <p class="contact-text">info@browniecarrental.com<br>support@browniecarrental.com<br>Response within 24 hours</p>
+                                <a href="mailto:info@browniecarrental.com" class="contact-link">
+                                    <i class="fas fa-envelope me-1"></i>Send Email
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Contact Form Section -->
+<section class="contact-form py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card shadow-lg" data-aos="fade-up">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0 text-center">
+                            <i class="fas fa-paper-plane me-2"></i>Send us a Message
+                        </h4>
+                    </div>
+                    <div class="card-body p-4">
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                    <i class="fas fa-check-circle me-2"></i>{{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                        
+                        <form method="POST" action="" novalidate>
+                            {% csrf_token %}
+                            
+                            {% if form.non_field_errors %}
+                                <div class="alert alert-danger">
+                                    {{ form.non_field_errors }}
+                                </div>
+                            {% endif %}
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label for="{{ form.name.id_for_label }}" class="fw-bold text-secondary">
+                                            <i class="fas fa-user me-2"></i>Your Name
+                                            {% if form.name.field.required %}<span class="text-danger">*</span>{% endif %}
+                                        </label>
+                                        {{ form.name }}
+                                        {% if form.name.errors %}
+                                            <div class="text-danger small mt-1">{{ form.name.errors.0 }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label for="{{ form.email.id_for_label }}" class="fw-bold text-secondary">
+                                            <i class="fas fa-envelope me-2"></i>Email Address
+                                            {% if form.email.field.required %}<span class="text-danger">*</span>{% endif %}
+                                        </label>
+                                        {{ form.email }}
+                                        {% if form.email.errors %}
+                                            <div class="text-danger small mt-1">{{ form.email.errors.0 }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group mb-3">
+                                <label for="{{ form.message.id_for_label }}" class="fw-bold text-secondary">
+                                    <i class="fas fa-comment me-2"></i>Your Message
+                                    {% if form.message.field.required %}<span class="text-danger">*</span>{% endif %}
+                                </label>
+                                {{ form.message }}
+                                {% if form.message.errors %}
+                                    <div class="text-danger small mt-1">{{ form.message.errors.0 }}</div>
+                                {% endif %}
+                                <small class="form-text text-muted">Please provide as much detail as possible</small>
+                            </div>
+                            
+                            <div class="form-group text-center mt-4">
+                                <button type="submit" class="btn btn-primary btn-lg px-5 shadow">
+                                    <i class="fas fa-paper-plane me-2"></i>Send Message
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

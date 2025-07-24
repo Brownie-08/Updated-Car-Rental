@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}Error - {{ error_code }}{% endblock %}
+
+{% block content %}
+<div class="error-container text-center mt-5">
+    <h1 class="display-1">{{ error_code }}</h1>
+    <h2>{{ error_message }}</h2>
+    <p>We're sorry, but something went wrong.</p>
+    {% if debug_info %}
+    <pre>{{ debug_info }}</pre>
+    {% endif %}
+    <a href="{% url 'home' %}" class="btn btn-primary mt-3">Return Home</a>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.error-container {
+    min-height: calc(100vh - 200px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #f8f9fa;
+    padding: 30px;
+}
+.error-container h1 {
+    font-size: 10rem;
+    color: #dc3545;
+}
+.error-container h2 {
+    color: #212529;
+    margin-bottom: 20px;
+}
+.error-container p {
+    color: #6c757d;
+}
+.error-container a {
+    text-decoration: none;
+}
+.error-container pre {
+    text-align: left;
+    max-width: 800px;
+    margin-top: 30px;
+    background: #e9ecef;
+    padding: 20px;
+    border-radius: 10px;
+}
+</style>
+{% endblock %}

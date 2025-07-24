@@ -1,0 +1,644 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %} Book Your Car {% endblock %}
+
+{% block search %}
+{% endblock %}
+
+{% block nav %}
+<!-- Navigation handled in base template -->
+{% endblock %}
+
+{% block body %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="booking-form-container">
+                <div class="booking-header">
+                    <div class="booking-icon">
+                        <i class="fas fa-car"></i>
+                    </div>
+                    {% if selected_car %}
+                        <h1 class="booking-title">Book {{ selected_car.car_name }}</h1>
+                        <p class="booking-subtitle">Complete your booking for this premium {{ selected_car.company_name }} vehicle</p>
+                        <div class="selected-car-info">
+                            <div class="car-info-badge">
+                                <i class="fas fa-check-circle me-2"></i>
+                                <span class="car-name">{{ selected_car.car_name }}</span>
+                                <span class="car-price">${{ selected_car.cost_par_day }}/day</span>
+                            </div>
+                        </div>
+                    {% else %}
+                        <h1 class="booking-title">Book Your Premium Car</h1>
+                        <p class="booking-subtitle">Experience luxury and comfort with our premium car rental service</p>
+                    {% endif %}
+                </div>
+                <div class="booking-body">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <form method="POST" action="" novalidate>
+                        {% csrf_token %}
+                        
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger">
+                                {{ form.non_field_errors }}
+                            </div>
+                        {% endif %}
+                        
+                        <div class="row">
+                            <!-- Car Name -->
+                            <div class="col-md-6">
+                                <div class="form-group-enhanced">
+                                    <label for="{{ form.car_name.id_for_label }}" class="form-label-enhanced">
+                                        <i class="fas fa-car"></i>Car Name
+                                        {% if form.car_name.field.required %}<span class="text-danger">*</span>{% endif %}
+                                    </label>
+                                    {{ form.car_name }}
+                                    {% if form.car_name.errors %}
+                                        <div class="text-danger small mt-1">{{ form.car_name.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <!-- Dealer Name -->
+                            <div class="col-md-6">
+                                <div class="form-group-enhanced">
+                                    <label for="{{ form.dealer_name.id_for_label }}" class="form-label-enhanced">
+                                        <i class="fas fa-user-tie"></i>Your Name
+                                        {% if form.dealer_name.field.required %}<span class="text-danger">*</span>{% endif %}
+                                    </label>
+                                    {{ form.dealer_name }}
+                                    {% if form.dealer_name.errors %}
+                                        <div class="text-danger small mt-1">{{ form.dealer_name.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <!-- Phone Number -->
+                            <div class="col-md-6">
+                                <div class="form-group-enhanced">
+                                    <label for="{{ form.cell_no.id_for_label }}" class="form-label-enhanced">
+                                        <i class="fas fa-phone"></i>Phone Number
+                                        {% if form.cell_no.field.required %}<span class="text-danger">*</span>{% endif %}
+                                    </label>
+                                    {{ form.cell_no }}
+                                    {% if form.cell_no.errors %}
+                                        <div class="text-danger small mt-1">{{ form.cell_no.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Address -->
+                        <div class="form-group-enhanced">
+                            <label for="{{ form.address.id_for_label }}" class="form-label-enhanced">
+                                <i class="fas fa-map-marker-alt"></i>Address
+                                {% if form.address.field.required %}<span class="text-danger">*</span>{% endif %}
+                            </label>
+                            {{ form.address }}
+                            {% if form.address.errors %}
+                                <div class="text-danger small mt-1">{{ form.address.errors.0 }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">Provide your full address for car delivery/pickup</small>
+                        </div>
+                        
+                        <div class="row">
+                            <!-- Date From -->
+                            <div class="col-md-6">
+                                <div class="form-group-enhanced">
+                                    <label for="{{ form.date_from.id_for_label }}" class="form-label-enhanced">
+                                        <i class="fas fa-calendar-alt"></i>Rental Start Date
+                                        {% if form.date_from.field.required %}<span class="text-danger">*</span>{% endif %}
+                                    </label>
+                                    <div class="date-input-group">
+                                        {{ form.date_from }}
+                                    </div>
+                                    {% if form.date_from.errors %}
+                                        <div class="text-danger small mt-1">{{ form.date_from.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <!-- Date To -->
+                            <div class="col-md-6">
+                                <div class="form-group-enhanced">
+                                    <label for="{{ form.date_to.id_for_label }}" class="form-label-enhanced">
+                                        <i class="fas fa-calendar-alt"></i>Rental End Date
+                                        {% if form.date_to.field.required %}<span class="text-danger">*</span>{% endif %}
+                                    </label>
+                                    <div class="date-input-group">
+                                        {{ form.date_to }}
+                                    </div>
+                                    {% if form.date_to.errors %}
+                                        <div class="text-danger small mt-1">{{ form.date_to.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Payment Method Selection -->
+                        <div class="form-group-enhanced">
+                            <label class="form-label-enhanced">
+                                <i class="fas fa-credit-card"></i>Payment Method
+                                <span class="text-danger">*</span>
+                            </label>
+                            <div class="payment-methods">
+                                {% for choice in form.payment_method %}
+                                    <div class="payment-method-option">
+                                        {{ choice.tag }}
+                                        <label for="{{ choice.id_for_label }}" class="payment-method-label">
+                                            <div class="payment-method-card">
+                                                <span class="payment-method-text">{{ choice.choice_label }}</span>
+                                                {% if choice.data.value == 'stripe' %}
+                                                    <small class="payment-method-desc">Secure online payment</small>
+                                                {% elif choice.data.value == 'paypal' %}
+                                                    <small class="payment-method-desc">PayPal account or guest checkout</small>
+                                                {% elif choice.data.value == 'pay_later' %}
+                                                    <small class="payment-method-desc">Cash or card at pickup</small>
+                                                {% elif choice.data.value == 'bank_transfer' %}
+                                                    <small class="payment-method-desc">Direct bank transfer</small>
+                                                {% endif %}
+                                            </div>
+                                        </label>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            {% if form.payment_method.errors %}
+                                <div class="text-danger small mt-1">{{ form.payment_method.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Booking Summary Card -->
+                        <div class="booking-summary">
+                            <h6 class="booking-summary-title">
+                                <i class="fas fa-info-circle"></i>Booking Information
+                            </h6>
+                            <ul class="booking-info-list">
+                                <li><i class="fas fa-check"></i>Please ensure all information is accurate</li>
+                                <li><i class="fas fa-check"></i>Rental period includes both start and end dates</li>
+                                <li><i class="fas fa-check"></i>You will receive a confirmation email after booking</li>
+                                <li><i class="fas fa-check"></i>Payment can be made at pickup or delivery</li>
+                                <li><i class="fas fa-check"></i>24/7 customer support available</li>
+                                <li><i class="fas fa-check"></i>Free cancellation up to 24 hours before rental</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="text-center mt-4">
+                            <button type="button" class="btn btn-booking-primary me-3" onclick="showConfirmationDialog()">
+                                <i class="fas fa-check-circle me-2"></i>Book Now
+                            </button>
+                            <a href="{% url 'system:newcar' %}" class="btn btn-booking-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Back to Cars
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+// Set minimum date to today for date inputs
+document.addEventListener('DOMContentLoaded', function() {
+    const today = new Date().toISOString().split('T')[0];
+    const dateFromInput = document.querySelector('input[name="date_from"]');
+    const dateToInput = document.querySelector('input[name="date_to"]');
+    
+    if (dateFromInput) {
+        dateFromInput.setAttribute('min', today);
+        dateFromInput.addEventListener('change', function() {
+            if (dateToInput) {
+                dateToInput.setAttribute('min', this.value);
+            }
+        });
+    }
+    
+    if (dateToInput) {
+        dateToInput.setAttribute('min', today);
+    }
+});
+
+// Booking confirmation dialog
+function showConfirmationDialog() {
+    const form = document.querySelector('form');
+    const formData = new FormData(form);
+    
+    // Basic form validation
+    if (!form.checkValidity()) {
+        // Show validation errors
+        form.classList.add('was-validated');
+        
+        // Scroll to first error
+        const firstError = form.querySelector(':invalid');
+        if (firstError) {
+            firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            firstError.focus();
+        }
+        
+        return;
+    }
+    
+    // Get form values
+    const carName = formData.get('car_name');
+    const dealerName = formData.get('dealer_name');
+    const dateFrom = formData.get('date_from');
+    const dateTo = formData.get('date_to');
+    const phone = formData.get('cell_no');
+    const address = formData.get('address');
+    
+    // Calculate rental duration
+    const startDate = new Date(dateFrom);
+    const endDate = new Date(dateTo);
+    const duration = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
+    
+    // Create confirmation modal
+    const modal = document.createElement('div');
+    modal.className = 'modal fade';
+    modal.id = 'confirmationModal';
+    modal.innerHTML = `
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title">
+                        <i class="fas fa-question-circle me-2"></i>Confirm Your Booking
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="confirmation-content">
+                        <div class="booking-summary-modal">
+                            <h6 class="fw-bold mb-3"><i class="fas fa-info-circle me-2"></i>Booking Details</h6>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong>Car:</strong> ${carName}</p>
+                                    <p><strong>Customer:</strong> ${dealerName}</p>
+                                    <p><strong>Phone:</strong> ${phone}</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><strong>From:</strong> ${new Date(dateFrom).toLocaleDateString()}</p>
+                                    <p><strong>To:</strong> ${new Date(dateTo).toLocaleDateString()}</p>
+                                    <p><strong>Duration:</strong> ${duration} day${duration > 1 ? 's' : ''}</p>
+                                </div>
+                            </div>
+                            <div class="address-section mt-3">
+                                <p><strong>Address:</strong> ${address}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="alert alert-info mt-4">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Please confirm:</strong> Are you sure you want to book this car with the above details?
+                        </div>
+                        
+                        <div class="important-notes mt-3">
+                            <h6 class="fw-bold">Important Notes:</h6>
+                            <ul class="mb-0">
+                                <li>You will receive a confirmation email after booking</li>
+                                <li>Payment can be made at pickup or delivery</li>
+                                <li>Free cancellation up to 24 hours before rental</li>
+                                <li>Please have your driver's license ready for pickup</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-2"></i>Cancel
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="confirmBooking()">
+                        <i class="fas fa-check me-2"></i>Yes, Confirm Booking
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Add modal to body
+    document.body.appendChild(modal);
+    
+    // Show modal
+    const bootstrapModal = new bootstrap.Modal(modal);
+    bootstrapModal.show();
+    
+    // Remove modal from DOM when hidden
+    modal.addEventListener('hidden.bs.modal', function () {
+        document.body.removeChild(modal);
+    });
+}
+
+function confirmBooking() {
+    // Hide the confirmation modal
+    const modal = document.getElementById('confirmationModal');
+    const bootstrapModal = bootstrap.Modal.getInstance(modal);
+    bootstrapModal.hide();
+    
+    // Submit the form
+    const form = document.querySelector('form');
+    form.submit();
+}
+</script>
+
+<style>
+/* Form styling to replace add_class functionality */
+.form-group-enhanced input, 
+.form-group-enhanced select, 
+.form-group-enhanced textarea {
+    border: 2px solid #e9ecef;
+    border-radius: 10px;
+    padding: 12px 16px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    width: 100%;
+    background-color: #fff;
+}
+
+.form-group-enhanced input:focus, 
+.form-group-enhanced select:focus, 
+.form-group-enhanced textarea:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    outline: none;
+}
+
+.form-label-enhanced {
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 8px;
+    display: block;
+}
+
+.form-label-enhanced i {
+    margin-right: 8px;
+    color: #667eea;
+}
+
+.booking-form-container {
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+    margin-top: 2rem;
+}
+
+.booking-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.booking-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+}
+
+.booking-icon i {
+    font-size: 2rem;
+    color: #fff;
+}
+
+.booking-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #1f2937;
+    margin-bottom: 0.5rem;
+}
+
+.booking-subtitle {
+    font-size: 1.1rem;
+    color: #6b7280;
+    margin-bottom: 0;
+}
+
+.form-group-enhanced {
+    margin-bottom: 1.5rem;
+}
+
+.booking-summary {
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    border-radius: 15px;
+    padding: 1.5rem;
+    margin-top: 2rem;
+}
+
+.booking-summary-title {
+    color: #374151;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.booking-info-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.booking-info-list li {
+    padding: 0.5rem 0;
+    color: #6b7280;
+}
+
+.booking-info-list i {
+    color: #10b981;
+    margin-right: 0.5rem;
+}
+
+.btn-booking-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    color: #fff;
+    padding: 12px 30px;
+    border-radius: 10px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-booking-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    color: #fff;
+}
+
+.btn-booking-secondary {
+    background: #6b7280;
+    border: none;
+    color: #fff;
+    padding: 12px 30px;
+    border-radius: 10px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.btn-booking-secondary:hover {
+    background: #4b5563;
+    transform: translateY(-2px);
+    color: #fff;
+    text-decoration: none;
+}
+
+/* Selected Car Info Badge */
+.selected-car-info {
+    margin-top: 1.5rem;
+    display: flex;
+    justify-content: center;
+}
+
+.car-info-badge {
+    background: rgba(255, 255, 255, 0.9);
+    border: 2px solid #667eea;
+    border-radius: 25px;
+    padding: 0.75rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+    transition: all 0.3s ease;
+}
+
+.car-info-badge:hover {
+    background: rgba(102, 126, 234, 0.1);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+}
+
+.car-info-badge i {
+    color: #10b981;
+    font-size: 1.1rem;
+}
+
+.car-info-badge .car-name {
+    font-weight: 700;
+    color: #1f2937;
+    font-size: 1.1rem;
+}
+
+.car-info-badge .car-price {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+/* Payment Method Styling */
+.payment-methods {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    margin-top: 0.5rem;
+}
+
+@media (min-width: 768px) {
+    .payment-methods {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.payment-method-option {
+    position: relative;
+}
+
+.payment-method-option input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.payment-method-label {
+    display: block;
+    cursor: pointer;
+    margin-bottom: 0;
+}
+
+.payment-method-card {
+    background: #fff;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 1rem;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    min-height: 80px;
+    justify-content: center;
+}
+
+.payment-method-card:hover {
+    border-color: #667eea;
+    background: #f8fafc;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
+}
+
+.payment-method-option input[type="radio"]:checked + .payment-method-label .payment-method-card {
+    border-color: #667eea;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+}
+
+.payment-method-text {
+    font-weight: 600;
+    color: #374151;
+    font-size: 1rem;
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+.payment-method-desc {
+    color: #6b7280;
+    font-size: 0.875rem;
+    display: block;
+}
+
+.payment-method-option input[type="radio"]:checked + .payment-method-label .payment-method-text {
+    color: #667eea;
+}
+
+.payment-method-option input[type="radio"]:checked + .payment-method-label .payment-method-desc {
+    color: #374151;
+}
+
+/* Add checkmark for selected payment method */
+.payment-method-option input[type="radio"]:checked + .payment-method-label .payment-method-card::after {
+    content: '✓';
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: #667eea;
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.payment-method-card {
+    position: relative;
+}</style>
+</style>
+{% endblock %}
+{% endblock %}

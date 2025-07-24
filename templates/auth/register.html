@@ -1,0 +1,174 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Register - Brownie Car Rental{% endblock %}
+
+{% block body %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-7 col-xl-6">
+        <div class="advanced-register-card">
+            <div class="register-header">
+                <div class="register-icon">
+                    <i class="fas fa-user-plus"></i>
+                </div>
+                <h2 class="register-title">Join Brownie Car Rental</h2>
+                <p class="register-subtitle">Create your account and start your premium car rental experience</p>
+            </div>
+            <div class="register-body">
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger" role="alert">
+                            {{ form.non_field_errors }}
+                        </div>
+                    {% endif %}
+                    
+                    <!-- Personal Information Section -->
+                    <div class="form-section">
+                        <h5 class="section-title">
+                            <i class="fas fa-user me-2"></i>Personal Information
+                        </h5>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="{{ form.first_name.id_for_label }}" class="form-label">{{ form.first_name.label }}</label>
+                                    {{ form.first_name }}
+                                    {% if form.first_name.errors %}
+                                        <div class="text-danger mt-1">
+                                            {{ form.first_name.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="{{ form.last_name.id_for_label }}" class="form-label">{{ form.last_name.label }}</label>
+                                    {{ form.last_name }}
+                                    {% if form.last_name.errors %}
+                                        <div class="text-danger mt-1">
+                                            {{ form.last_name.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Account Information Section -->
+                    <div class="form-section">
+                        <h5 class="section-title">
+                            <i class="fas fa-key me-2"></i>Account Information
+                        </h5>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.username.id_for_label }}" class="form-label">{{ form.username.label }}</label>
+                            {{ form.username }}
+                            {% if form.username.help_text %}
+                                <div class="form-text">{{ form.username.help_text }}</div>
+                            {% endif %}
+                            {% if form.username.errors %}
+                                <div class="text-danger mt-1">
+                                    {{ form.username.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.email.id_for_label }}" class="form-label">{{ form.email.label }}</label>
+                            {{ form.email }}
+                            {% if form.email.errors %}
+                                <div class="text-danger mt-1">
+                                    {{ form.email.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.phone_number.id_for_label }}" class="form-label">{{ form.phone_number.label }}</label>
+                            {{ form.phone_number }}
+                            {% if form.phone_number.errors %}
+                                <div class="text-danger mt-1">
+                                    {{ form.phone_number.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Security Section -->
+                    <div class="form-section">
+                        <h5 class="section-title">
+                            <i class="fas fa-shield-alt me-2"></i>Security
+                        </h5>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="{{ form.password.id_for_label }}" class="form-label">{{ form.password.label }}</label>
+                                    {{ form.password }}
+                                    {% if form.password.help_text %}
+                                        <div class="form-text">{{ form.password.help_text }}</div>
+                                    {% endif %}
+                                    {% if form.password.errors %}
+                                        <div class="text-danger mt-1">
+                                            {{ form.password.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="{{ form.password2.id_for_label }}" class="form-label">{{ form.password2.label }}</label>
+                                    {{ form.password2 }}
+                                    {% if form.password2.errors %}
+                                        <div class="text-danger mt-1">
+                                            {{ form.password2.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Terms and Submit -->
+                    <div class="form-section">
+                        <div class="mb-4">
+                            <div class="form-check custom-checkbox">
+                                {{ form.terms_accepted }}
+                                <label class="form-check-label" for="{{ form.terms_accepted.id_for_label }}">
+                                    {{ form.terms_accepted.label }}
+                                </label>
+                                {% if form.terms_accepted.errors %}
+                                    <div class="text-danger mt-1">
+                                        {{ form.terms_accepted.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-gradient btn-lg">
+                                <i class="fas fa-user-plus me-2"></i>Create Account
+                            </button>
+                        </div>
+                    </div>
+                </form>
+                
+                <div class="register-links">
+                    <p class="login-link">Already have an account? <a href="{% url 'login' %}" class="link-primary">Sign in here</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

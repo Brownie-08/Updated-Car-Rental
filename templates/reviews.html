@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<style>
+    .hero-section {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 100px 0 50px;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.3);
+        z-index: 1;
+    }
+    
+    .hero-content {
+        position: relative;
+        z-index: 2;
+    }
+    
+    .stat-item {
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 15px;
+        padding: 30px 20px;
+        text-align: center;
+        transition: all 0.3s ease;
+    }
+    
+    .stat-item:hover {
+        transform: translateY(-5px);
+        background: rgba(255, 255, 255, 0.25);
+    }
+    
+    .reviews-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 30px;
+        padding: 50px 0;
+    }
+    
+    .review-card {
+        background: white;
+        border-radius: 15px;
+        padding: 30px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .review-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    
+    .review-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    }
+    
+    .stars {
+        color: #ffc107;
+        font-size: 1.5rem;
+        margin-bottom: 15px;
+    }
+    
+    .customer-info {
+        display: flex;
+        align-items: center;
+        margin-top: 20px;
+    }
+    
+    .customer-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+        margin-right: 15px;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<section class="hero-section">
+    <div class="container">
+        <div class="hero-content text-center">
+            <h1 class="display-4 fw-bold mb-4">Customer Reviews</h1>
+            <p class="lead mb-5">See what our customers say about their rental experience</p>
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <div class="stat-item">
+                        <h3 class="h1 fw-bold">4.8</h3>
+                        <p class="mb-0">Average Rating</p>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="stat-item">
+                        <h3 class="h1 fw-bold">850+</h3>
+                        <p class="mb-0">Happy Customers</p>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="stat-item">
+                        <h3 class="h1 fw-bold">95%</h3>
+                        <p class="mb-0">Satisfaction Rate</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-5">
+    <div class="container">
+        <div class="reviews-grid">
+            {% for review in reviews %}
+            <div class="review-card">
+                <div class="stars">
+                    {% for i in "12345" %}
+                        {% if forloop.counter <= review.rating %}
+                            ★
+                        {% else %}
+                            ☆
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                <p class="review-text">{{ review.review_text }}</p>
+                <div class="customer-info">
+                    <div class="customer-avatar">
+                        {{ review.customer_name|first }}
+                    </div>
+                    <div>
+                        <h6 class="mb-0">{{ review.customer_name }}</h6>
+                        <small class="text-muted">{{ review.created_at|date:"M d, Y" }}</small>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center py-5">
+                <h3 class="text-muted">No reviews yet</h3>
+                <p class="text-muted">Be the first to share your experience!</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,144 @@
+{% extends 'base_admin.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %} Messages - Admin Dashboard {% endblock %}
+{% block admin_content %}
+<div class='container table-responsive'>
+<div class="panel panel-primary">
+  <!-- Default panel contents -->
+  <div class="panel-heading">
+    <h5><strong><span class="glyphicon glyphicon-list"></span> All Mail List</strong></h5>
+    <!-- Search Form -->
+    <form method="GET" class="form-inline pull-right" style="margin-top: -35px;">
+      <div class="form-group">
+        <input type="text" name="search" class="form-control" placeholder="Search messages..." value="{{ request.GET.search }}">
+        <button type="submit" class="btn btn-primary">Search</button>
+        {% if request.GET.search %}
+          <a href="{% url 'admin_msg' %}" class="btn btn-default">Clear</a>
+        {% endif %}
+      </div>
+    </form>
+  </div>
+    <div class="panel-body">
+  <!-- Table -->
+
+  <table class="table table-bordered table-striped table-hover">
+
+   <tr>
+    <td><strong>Sender Name</strong></td>
+    <td><strong>Sender Mail</strong></td>
+    <td><strong>Message</strong></td>
+<td><strong>Actions</strong></td>
+    </tr>
+
+      <tbody>
+      {% for ob in messages %}
+
+    <tr>
+    <td>{{ob.name}}</td>
+    <td>{{ob.email}}</td>
+    <td>{{ob.message}}</td>
+
+    <td>
+        <div class="btn-group" role="group">
+            <!-- Response Button -->
+            <button type="button" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#responseModal{{ob.id}}">
+                <i class="fas fa-reply"></i> Respond
+            </button>
+            
+            <!-- Delete Button -->
+            <a href="{% url 'msg_delete' ob.id %}" class="btn btn-danger btn-sm" onclick="return getConfirmation()">
+                <i class="fas fa-trash"></i> Delete
+            </a>
+        </div>
+
+        <!-- Modal for Response Form -->
+        <div id="responseModal{{ob.id}}" class="modal fade" role="dialog">
+            <div class="modal-dialog modal-lg">
+                <!-- Modal Content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">
+                            <i class="fas fa-reply"></i> 
+                            Respond to {{ ob.name }}
+                        </h4>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form method="POST" action="{% url 'admin_msg_respond' ob.id %}">
+                        {% csrf_token %}
+                        <div class="modal-body">
+                            <!-- Show original message -->
+                            <div class="alert alert-info">
+                                <h5><strong>Original Message:</strong></h5>
+                                <p><strong>From:</strong> {{ ob.name }} ({{ ob.email }})</p>
+                                <p><strong>Date:</strong> {{ ob.created_at|date:"F d, Y g:i A" }}</p>
+                                <hr>
+                                <p>{{ ob.message }}</p>
+                            </div>
+                            
+                            <!-- Response form -->
+                            <div class="form-group">
+                                <label for="response_message_{{ ob.id }}"><strong>Your Response:</strong></label>
+                                <textarea 
+                                    id="response_message_{{ ob.id }}" 
+                                    class="form-control" 
+                                    name="response_message" 
+                                    rows="8" 
+                                    placeholder="Type your response to {{ ob.name }} here..."
+                                    required></textarea>
+                                <small class="help-block text-muted">
+                                    This message will be sent to {{ ob.email }}
+                                </small>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-paper-plane"></i> Send Response
+                            </button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                <i class="fas fa-times"></i> Cancel
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </td>
+    </tr>
+    {% endfor %}
+</tbody>
+  </table>
+
+<nav>
+  <ul class="pager">
+    <li class="previous">{% if messages.has_previous %}
+            <a href="?page={{ messages.previous_page_number }}" style="background-color:#1aa3ff !important; color: white !important;"><span aria-hidden="true">&larr;</span> Previous</a>
+    {% endif %}
+    </li>
+      <li class="previous" style="color: black !important;">
+          Page {{ messages.number }} of {{ messages.paginator.num_pages }}.
+
+    </li>
+    <li class="next">{% if messages.has_next %}
+            <a href="?page={{ messages.next_page_number }}" style="background-color:#1aa3ff !important; color: white !important;">
+        Next <span aria-hidden="true">&rarr;</span></a>{% endif %}</li>
+  </ul>
+</nav>
+        <hr>
+
+</div>
+
+</div>
+
+
+
+</div> <!--end container-->
+
+<script>
+function getConfirmation() {
+    return confirm('Are you sure you want to delete this message? This action cannot be undone.');
+}
+</script>
+
+{% endblock %}

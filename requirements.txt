@@ -1,0 +1,53 @@
+# Core Django
+Django>=4.2.11,<5.0
+django-environ>=0.10.0
+
+# Database
+psycopg2-binary>=2.9.0
+
+# Forms and UI
+django-crispy-forms>=1.14.0,<2.0
+crispy-bootstrap5>=0.7,<1.0
+
+# Security
+django-csp>=3.8
+
+# File handling and reports
+Pillow>=10.0.0,<11.0
+reportlab>=4.0.0,<5.0
+
+# Django REST Framework and API
+djangorestframework>=3.14.0,<4.0
+djangorestframework-simplejwt>=5.3.0,<6.0
+django-cors-headers>=4.3.0,<5.0
+django-filter>=23.3,<24.0
+drf-yasg>=1.21.0,<2.0
+drf-spectacular>=0.26.5,<1.0
+
+# Celery for async tasks
+celery>=5.3.0,<6.0
+django-celery-beat>=2.5.0,<3.0
+redis>=4.5.0,<6.0
+
+# WebSocket support
+channels>=4.0.0,<5.0
+channels-redis>=4.1.0,<5.0
+
+# Payment Integration
+stripe>=7.0.0,<8.0
+paypal-checkout-serversdk>=1.0.1,<2.0
+
+# Web server and static files
+gunicorn>=21.2.0,<22.0
+whitenoise>=6.6.0,<7.0
+
+# Additional utilities
+requests>=2.31.0,<3.0
+python-decouple>=3.8,<4.0
+django-extensions>=3.2.0,<4.0
+
+# Development and testing
+django-debug-toolbar>=4.2.0,<5.0
+
+# Version constraints
+setuptools<81

@@ -1,0 +1,555 @@
+{% extends "base.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% load form_tags %}
+{% block title %} {{title}} {% endblock %}
+
+{% block search %}
+<!-- Hide search for form pages -->
+{% endblock %}
+
+{% block nav %}
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'home' %}">
+        <i class="fas fa-home mr-1"></i> Home
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'system:car_list' %}">
+        <i class="fas fa-car mr-1"></i> View Cars
+    </a>
+</li>
+{% if 'login' not in request.resolver_match.url_name %}
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'login' %}">
+        <i class="fas fa-sign-in-alt mr-1"></i> Login
+    </a>
+</li>
+{% endif %}
+{% if 'register' not in request.resolver_match.url_name %}
+<li class="nav-item">
+    <a class="nav-link btn btn-outline-light ml-2 px-3" href="{% url 'register' %}">
+        <i class="fas fa-user-plus mr-1"></i> Register
+    </a>
+</li>
+{% endif %}
+{% endblock %}
+
+{% block body %}
+<!-- Form Hero Section -->
+<section class="form-hero py-5">
+    <div class="container">
+        <div class="row justify-content-center min-vh-75 align-items-center">
+            <div class="col-lg-6 col-md-8">
+                <div class="modern-form-container" data-aos="fade-up">
+                    <div class="form-header text-center mb-4">
+                        <div class="form-icon mb-3">
+                            {% if 'login' in title.lower %}
+                                <i class="fas fa-sign-in-alt"></i>
+                            {% elif 'register' in title.lower %}
+                                <i class="fas fa-user-plus"></i>
+                            {% elif 'password' in title.lower %}
+                                <i class="fas fa-key"></i>
+                            {% else %}
+                                <i class="fas fa-edit"></i>
+                            {% endif %}
+                        </div>
+                        <h2 class="form-title">{{ title }}</h2>
+                        <p class="form-subtitle">
+                            {% if 'login' in title.lower %}
+                                Welcome back! Please sign in to your account.
+                            {% elif 'register' in title.lower %}
+                                Join our premium car rental service today.
+                            {% elif 'password' in title.lower %}
+                                Reset your password to regain access.
+                            {% else %}
+                                Please fill out the form below.
+                            {% endif %}
+                        </p>
+                    </div>
+                
+                    <!-- Messages -->
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show modern-alert" role="alert">
+                                <i class="fas fa-info-circle me-2"></i>{{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                    
+                    <!-- Form -->
+                    <form method="POST" action="" novalidate class="modern-form">
+                        {% csrf_token %}
+                        
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger modern-alert">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                {{ form.non_field_errors }}
+                            </div>
+                        {% endif %}
+                        
+                        {% for field in form %}
+                            <div class="form-group-enhanced mb-4">
+                                <label for="{{ field.id_for_label }}" class="form-label-enhanced">
+                                    <i class="fas 
+                                        {% if field.field.widget.input_type == 'password' %}fa-lock
+                                        {% elif field.field.widget.input_type == 'email' %}fa-envelope
+                                        {% elif 'username' in field.name or 'name' in field.name %}fa-user
+                                        {% elif 'phone' in field.name %}fa-phone
+                                        {% else %}fa-edit
+                                        {% endif %} me-2"></i>
+                                    {{ field.label }}
+                                    {% if field.field.required %}
+                                        <span class="text-danger ms-1">*</span>
+                                    {% endif %}
+                                </label>
+                                
+                                <div class="input-group-enhanced">
+                                    {% if field.field.widget.input_type == 'password' %}
+                                        <div class="password-input-container">
+                                            {{ field|add_class:"form-control form-control-enhanced" }}
+                                            <button type="button" class="password-toggle" onclick="togglePassword(this)">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                        </div>
+                                    {% else %}
+                                        {{ field|add_class:"form-control form-control-enhanced" }}
+                                    {% endif %}
+                                </div>
+                                
+                                {% if field.errors %}
+                                    <div class="form-error mt-2">
+                                        <i class="fas fa-exclamation-circle me-1"></i>
+                                        {{ field.errors.0 }}
+                                    </div>
+                                {% endif %}
+                                
+                                {% if field.help_text %}
+                                    <small class="form-help-text mt-1">
+                                        <i class="fas fa-info-circle me-1"></i>{{ field.help_text }}
+                                    </small>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                        
+                        <!-- Submit Button -->
+                        <div class="form-submit-section text-center mt-5">
+                            <button type="submit" class="btn btn-primary-enhanced btn-lg">
+                                {% if 'login' in title.lower %}
+                                    <i class="fas fa-sign-in-alt me-2"></i>Sign In
+                                {% elif 'register' in title.lower %}
+                                    <i class="fas fa-user-plus me-2"></i>Create Account
+                                {% elif 'password' in title.lower %}
+                                    <i class="fas fa-key me-2"></i>Reset Password
+                                {% else %}
+                                    <i class="fas fa-check me-2"></i>Submit
+                                {% endif %}
+                            </button>
+                        </div>
+                        
+                        <!-- Form Links -->
+                        <div class="form-links text-center mt-4">
+                            {% if 'login' in title.lower %}
+                                <p class="mb-2">
+                                    <a href="{% url 'password_reset_request' %}" class="form-link">
+                                        <i class="fas fa-key me-1"></i>Forgot your password?
+                                    </a>
+                                </p>
+                                <p class="mb-0">
+                                    <span class="text-muted">Don't have an account?</span>
+                                    <a href="{% url 'register' %}" class="form-link-primary">
+                                        <i class="fas fa-user-plus me-1"></i>Register here
+                                    </a>
+                                </p>
+                            {% elif 'register' in title.lower %}
+                                <p class="mb-0">
+                                    <span class="text-muted">Already have an account?</span>
+                                    <a href="{% url 'login' %}" class="form-link-primary">
+                                        <i class="fas fa-sign-in-alt me-1"></i>Login here
+                                    </a>
+                                </p>
+                            {% elif 'password' in title.lower %}
+                                <p class="mb-0">
+                                    <a href="{% url 'login' %}" class="form-link">
+                                        <i class="fas fa-arrow-left me-1"></i>Back to Login
+                                    </a>
+                                </p>
+                            {% endif %}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Form Hero Section */
+.form-hero {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+}
+
+/* Modern Form Container */
+.modern-form-container {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border-radius: 24px;
+    padding: 3rem;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+/* Form Header */
+.form-header {
+    margin-bottom: 2rem;
+}
+
+.form-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    color: white;
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+}
+
+.form-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--dark-color);
+    margin-bottom: 1rem;
+}
+
+.form-subtitle {
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    line-height: 1.6;
+}
+
+/* Enhanced Form Groups */
+.form-group-enhanced {
+    position: relative;
+}
+
+.form-label-enhanced {
+    font-weight: 600;
+    color: var(--dark-color);
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    font-size: 0.95rem;
+}
+
+.form-control-enhanced {
+    background: rgba(248, 250, 252, 0.8);
+    border: 2px solid rgba(102, 126, 234, 0.1);
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+.form-control-enhanced:focus {
+    background: white;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    transform: translateY(-2px);
+}
+
+/* Password Toggle */
+.password-input-container {
+    position: relative;
+    width: 100%;
+}
+
+.password-toggle {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.password-toggle:hover {
+    color: var(--primary-color);
+    background: rgba(102, 126, 234, 0.1);
+}
+
+/* Form Errors */
+.form-error {
+    color: #dc3545;
+    font-size: 0.875rem;
+    display: flex;
+    align-items: center;
+}
+
+.form-help-text {
+    color: var(--text-muted);
+    font-size: 0.825rem;
+    display: flex;
+    align-items: center;
+}
+
+/* Enhanced Submit Button */
+.btn-primary-enhanced {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    border: none;
+    border-radius: 50px;
+    padding: 1rem 3rem;
+    font-weight: 600;
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-primary-enhanced:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4);
+    background: linear-gradient(135deg, var(--secondary-color) 0%, var(--primary-color) 100%);
+}
+
+.btn-primary-enhanced:active {
+    transform: translateY(-1px);
+}
+
+/* Form Links */
+.form-links {
+    margin-top: 2rem;
+}
+
+.form-link {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
+
+.form-link:hover {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.form-link-primary {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+}
+
+.form-link-primary:hover {
+    color: var(--secondary-color);
+    text-decoration: none;
+}
+
+/* Modern Alerts */
+.modern-alert {
+    border: none;
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.5rem;
+    backdrop-filter: blur(10px);
+}
+
+.alert-success {
+    background: rgba(34, 197, 94, 0.1);
+    color: #059669;
+    border-left: 4px solid #10b981;
+}
+
+.alert-danger {
+    background: rgba(239, 68, 68, 0.1);
+    color: #dc2626;
+    border-left: 4px solid #ef4444;
+}
+
+.alert-info {
+    background: rgba(59, 130, 246, 0.1);
+    color: #2563eb;
+    border-left: 4px solid #3b82f6;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .modern-form-container {
+        padding: 2rem 1.5rem;
+        margin: 1rem;
+    }
+    
+    .form-title {
+        font-size: 2rem;
+    }
+    
+    .form-icon {
+        width: 60px;
+        height: 60px;
+        font-size: 1.5rem;
+    }
+    
+    .btn-primary-enhanced {
+        padding: 0.875rem 2.5rem;
+        font-size: 1rem;
+    }
+}
+
+/* Animation Classes */
+.form-group-enhanced {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: slideInUp 0.6s ease forwards;
+}
+
+.form-group-enhanced:nth-child(1) { animation-delay: 0.1s; }
+.form-group-enhanced:nth-child(2) { animation-delay: 0.2s; }
+.form-group-enhanced:nth-child(3) { animation-delay: 0.3s; }
+.form-group-enhanced:nth-child(4) { animation-delay: 0.4s; }
+.form-group-enhanced:nth-child(5) { animation-delay: 0.5s; }
+
+@keyframes slideInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Password toggle functionality
+function togglePassword(button) {
+    const input = button.previousElementSibling;
+    const icon = button.querySelector('i');
+    
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+    } else {
+        input.type = 'password';
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+    }
+}
+
+// Form validation enhancements
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('.modern-form');
+    const inputs = form.querySelectorAll('.form-control-enhanced');
+    
+    // Real-time validation
+    inputs.forEach(input => {
+        input.addEventListener('blur', function() {
+            validateField(this);
+        });
+        
+        input.addEventListener('input', function() {
+            clearFieldError(this);
+        });
+    });
+    
+    // Form submission
+    form.addEventListener('submit', function(e) {
+        let isValid = true;
+        
+        inputs.forEach(input => {
+            if (!validateField(input)) {
+                isValid = false;
+            }
+        });
+        
+        if (!isValid) {
+            e.preventDefault();
+            // Focus on first invalid field
+            const firstInvalid = form.querySelector('.form-control-enhanced.is-invalid');
+            if (firstInvalid) {
+                firstInvalid.focus();
+            }
+        }
+    });
+});
+
+function validateField(input) {
+    const value = input.value.trim();
+    const isRequired = input.hasAttribute('required');
+    let isValid = true;
+    
+    // Clear previous states
+    clearFieldError(input);
+    
+    // Required validation
+    if (isRequired && !value) {
+        showFieldError(input, 'This field is required.');
+        isValid = false;
+    }
+    
+    // Email validation
+    if (input.type === 'email' && value) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(value)) {
+            showFieldError(input, 'Please enter a valid email address.');
+            isValid = false;
+        }
+    }
+    
+    // Password validation
+    if (input.type === 'password' && value && input.name === 'password1') {
+        if (value.length < 8) {
+            showFieldError(input, 'Password must be at least 8 characters long.');
+            isValid = false;
+        }
+    }
+    
+    return isValid;
+}
+
+function showFieldError(input, message) {
+    input.classList.add('is-invalid');
+    input.style.borderColor = '#dc3545';
+    
+    // Create or update error message
+    let errorDiv = input.parentNode.nextElementSibling;
+    if (!errorDiv || !errorDiv.classList.contains('form-error')) {
+        errorDiv = document.createElement('div');
+        errorDiv.className = 'form-error mt-2';
+        input.parentNode.insertAdjacentElement('afterend', errorDiv);
+    }
+    
+    errorDiv.innerHTML = `<i class="fas fa-exclamation-circle me-1"></i>${message}`;
+}
+
+function clearFieldError(input) {
+    input.classList.remove('is-invalid');
+    input.style.borderColor = '';
+    
+    const errorDiv = input.parentNode.nextElementSibling;
+    if (errorDiv && errorDiv.classList.contains('form-error')) {
+        errorDiv.remove();
+    }
+}
+</script>
+{% endblock %}
