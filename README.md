@@ -115,9 +115,8 @@ docker-compose up -d
 open http://localhost:8000
 ```
 
-**Default Admin Credentials:**
-- Username: `admin`
-- Password: `admin123`
+**Admin Setup:**
+- Create your admin account during setup
 - Admin Panel: http://localhost:8000/admin
 
 ## 🛠️ Installation
