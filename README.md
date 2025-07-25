@@ -58,6 +58,9 @@ A comprehensive, production-ready car rental management system built with Django
 - **Reporting**: Comprehensive business intelligence
 - **Audit Logs**: Complete activity tracking
 
+![Admin Dashboard](screenshots/admin-dashboard.png)
+*Professional admin dashboard with real-time analytics, revenue tracking, and comprehensive business insights*
+
 ### 🔧 Technical Features
 - **REST API**: Complete API with OpenAPI documentation
 - **Background Tasks**: Celery for async processing
@@ -692,7 +695,7 @@ SECURE_HSTS_SECONDS = 31536000  # 1 year
 - **Documentation**: Check this README and inline docs
 - **Issues**: Open a GitHub issue for bugs
 - **Discussions**: Use GitHub Discussions for questions
-- **Email**: contact@yourcompany.com
+- **Email**: brownietech08@gmail.com
 
 ### Commercial Support
 
