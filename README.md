@@ -695,7 +695,7 @@ SECURE_HSTS_SECONDS = 31536000  # 1 year
 - **Documentation**: Check this README and inline docs
 - **Issues**: Open a GitHub issue for bugs
 - **Discussions**: Use GitHub Discussions for questions
-- **Email**: brownietech08@gmail.com
+- **Email**: emmanuelmikebrown242@yahoo.com
 
 ### Commercial Support
 
