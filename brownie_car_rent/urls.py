@@ -79,9 +79,11 @@ def _check_db_connection():
         return 'connected'
     except Exception:
         return 'disconnected'
+# Serve media files in all environments (Render will handle static files via WhiteNoise)
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     
     # Add debug toolbar URLs if available
     try:
