@@ -91,8 +91,8 @@ Welcome to Brownie Car Rental System - a state-of-the-art web application built 
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/your-username/brownie-car-rental.git
-   cd brownie-car-rental
+   git clone https://github.com/Brownie-08/Updated-Car-Rental.git
+   cd Updated-Car-Rental
    ```
 
 2. **Create virtual environment**
