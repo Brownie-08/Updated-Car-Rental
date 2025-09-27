@@ -199,13 +199,23 @@ Create a `.env` file in the root directory:
 DEBUG=True
 SECRET_KEY=your-secret-key-here
 DATABASE_URL=sqlite:///db.sqlite3
+
+# Email Configuration (use environment variables - NEVER commit real credentials)
 EMAIL_HOST=smtp.gmail.com
-EMAIL_HOST_USER=your-email@gmail.com
+EMAIL_HOST_USER=your-email@example.com
 EMAIL_HOST_PASSWORD=your-app-password
-STRIPE_PUBLISHABLE_KEY=your-stripe-key
-STRIPE_SECRET_KEY=your-stripe-secret
-PAYSTACK_PUBLIC_KEY=your-paystack-key
-PAYSTACK_SECRET_KEY=your-paystack-secret
+DEFAULT_FROM_EMAIL=Your Site <noreply@yoursite.com>
+
+# Payment Gateway Keys (use environment variables - NEVER commit real keys)
+STRIPE_PUBLISHABLE_KEY=pk_test_your_stripe_publishable_key
+STRIPE_SECRET_KEY=sk_test_your_stripe_secret_key
+PAYSTACK_PUBLIC_KEY=pk_test_your_paystack_public_key
+PAYSTACK_SECRET_KEY=sk_test_your_paystack_secret_key
+
+# Security Warning: 
+# - Copy the .env.example file to .env and fill in your actual values
+# - NEVER commit your .env file to version control
+# - Use strong, unique passwords and API keys
 ```
 
 ## 🧪 Testing
@@ -218,6 +228,27 @@ python manage.py test
 python manage.py test system.tests
 python manage.py test api.tests
 ```
+
+## 🔒 Security
+
+### Important Security Notes
+- **Never commit sensitive credentials** to version control
+- Use environment variables for all sensitive configuration
+- Keep your `.env` file in `.gitignore`
+- Use strong, unique passwords for all accounts
+- Regularly rotate API keys and passwords
+- Enable 2FA on all external services (Stripe, Paystack, email providers)
+- Use test/sandbox keys during development
+- Review and audit dependencies regularly
+
+### Production Security Checklist
+- [ ] All sensitive data is in environment variables
+- [ ] Debug mode is disabled in production
+- [ ] HTTPS is enabled
+- [ ] Database has strong passwords
+- [ ] Static files are served securely
+- [ ] Security headers are configured
+- [ ] Regular security updates are applied
 
 ## 📈 Recent Updates
 
