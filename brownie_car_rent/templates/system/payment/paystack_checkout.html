@@ -1,0 +1,415 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Complete Your Payment - Brownie Car Rental{% endblock %}
+
+{% block extra_css %}
+<style>
+    .payment-container {
+        max-width: 600px;
+        margin: 2rem auto;
+        padding: 2rem;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+    .payment-header {
+        text-align: center;
+        margin-bottom: 2rem;
+        padding: 1.5rem;
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        color: white;
+        border-radius: 8px;
+    }
+    .order-summary {
+        background: #f8f9fa;
+        padding: 1.5rem;
+        border-radius: 8px;
+        margin-bottom: 1.5rem;
+        border-left: 4px solid #28a745;
+    }
+    .payment-button {
+        width: 100%;
+        padding: 15px;
+        font-size: 18px;
+        font-weight: 600;
+        background: linear-gradient(135deg, #00C851 0%, #28a745 100%);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin: 1rem 0;
+    }
+    .payment-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(40, 167, 69, 0.3);
+    }
+    .payment-button:disabled {
+        background: #6c757d;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+    }
+    .security-info {
+        background: #e8f5e8;
+        padding: 1rem;
+        border-radius: 6px;
+        margin: 1rem 0;
+        font-size: 14px;
+        color: #155724;
+    }
+    .paystack-logo {
+        display: inline-block;
+        margin: 0 5px;
+        vertical-align: middle;
+    }
+    .loading-spinner {
+        display: none;
+        text-align: center;
+        margin: 1rem 0;
+    }
+    .spinner {
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #28a745;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 2s linear infinite;
+        margin: 0 auto;
+    }
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    .error-message {
+        background: #f8d7da;
+        color: #721c24;
+        padding: 1rem;
+        border-radius: 6px;
+        margin: 1rem 0;
+        display: none;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <div class="payment-container">
+        <div class="payment-header">
+            <h2><i class="fas fa-credit-card"></i> Complete Your Payment</h2>
+            <p>Secure payment powered by <span class="paystack-logo"><strong>Paystack</strong></span></p>
+        </div>
+
+        <div class="order-summary">
+            <h4><i class="fas fa-car"></i> Booking Summary</h4>
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <strong>Order Number:</strong><br>
+                    <span class="text-success">#{{ order.order_number }}</span>
+                </div>
+                <div class="col-md-6">
+                    <strong>Vehicle:</strong><br>
+                    {{ order.car_name }}
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <strong>Customer:</strong><br>
+                    {{ order.dealer_name }}
+                </div>
+                <div class="col-md-6">
+                    <strong>Rental Period:</strong><br>
+                    {{ order.date_from|date:"M d, Y" }} - {{ order.date_to|date:"M d, Y" }}
+                </div>
+            </div>
+            <hr>
+                            <div class="row">
+                                <div class="col-6">
+                                    <h5><strong>Original Price (USD):</strong></h5>
+                                </div>
+                                <div class="col-6 text-right">
+                                    <h6 class="usd-amount">${{ order.total_amount|floatformat:2 }}</h6>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6">
+                                    <h5><strong>Amount to Pay (NGN):</strong></h5>
+                                </div>
+                                <div class="col-6 text-right">
+                                    <h5 class="ngn-amount text-muted">Converting...</h5>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12 text-center">
+                                    <small class="exchange-rate text-muted" style="display: none;">Exchange rate loading...</small>
+                                </div>
+                            </div>
+        </div>
+
+        <div class="security-info">
+            <i class="fas fa-shield-alt"></i>
+            <strong>Secure Payment:</strong> Your payment information is encrypted and secure. 
+            We use industry-standard SSL technology to protect your data.
+        </div>
+
+        <div class="error-message" id="error-message">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span id="error-text"></span>
+        </div>
+
+        <div class="loading-spinner" id="loading-spinner">
+            <div class="spinner"></div>
+            <p>Processing your payment...</p>
+        </div>
+
+        <button id="pay-now-btn" class="payment-button" disabled>
+            <i class="fas fa-spinner fa-spin"></i> Loading...
+        </button>
+
+        <div class="text-center mt-3">
+            <small class="text-muted">
+                <i class="fas fa-lock"></i>
+                Secured by Paystack | Your payment stays on this page
+            </small>
+        </div>
+
+        <div class="text-center mt-4">
+            <a href="{% url 'system:order_detail' order.id %}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Order
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://js.paystack.co/v1/inline.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const payButton = document.getElementById('pay-now-btn');
+    const loadingSpinner = document.getElementById('loading-spinner');
+    const errorMessage = document.getElementById('error-message');
+    const errorText = document.getElementById('error-text');
+    
+    // Store currency and payment data
+    let currencyData = null;
+    let paymentData = null;
+    
+    // UI Elements for currency display
+    const usdAmountEl = document.querySelector('.usd-amount');
+    const ngnAmountEl = document.querySelector('.ngn-amount');
+    const exchangeRateEl = document.querySelector('.exchange-rate');
+    const payButtonAmount = document.querySelector('.pay-button-amount');
+
+    function showError(message) {
+        errorText.textContent = message;
+        errorMessage.style.display = 'block';
+        loadingSpinner.style.display = 'none';
+        payButton.disabled = false;
+        updatePayButton('Try Again');
+    }
+
+    function showLoading(message = 'Processing...') {
+        loadingSpinner.style.display = 'block';
+        loadingSpinner.querySelector('p').textContent = message;
+        errorMessage.style.display = 'none';
+        payButton.disabled = true;
+        payButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ' + message;
+    }
+    
+    function updatePayButton(text = null) {
+        if (text) {
+            payButton.innerHTML = '<i class="fas fa-credit-card"></i> ' + text;
+        } else if (currencyData && currencyData.ngn_amount_formatted) {
+            payButton.innerHTML = '<i class="fas fa-credit-card"></i> Pay ' + currencyData.ngn_amount_formatted + ' Now';
+        } else {
+            payButton.innerHTML = '<i class="fas fa-credit-card"></i> Pay Now';
+        }
+    }
+    
+    function updateCurrencyDisplay() {
+        if (currencyData) {
+            if (usdAmountEl) usdAmountEl.textContent = currencyData.usd_amount_formatted;
+            if (ngnAmountEl) {
+                ngnAmountEl.innerHTML = '<strong>' + currencyData.ngn_amount_formatted + '</strong>';
+                ngnAmountEl.classList.remove('text-muted');
+                ngnAmountEl.classList.add('text-success');
+            }
+            if (exchangeRateEl) {
+                exchangeRateEl.textContent = currencyData.exchange_rate;
+                exchangeRateEl.style.display = 'block';
+            }
+            updatePayButton();
+        }
+    }
+    
+    // Fetch currency conversion on page load
+    function fetchCurrencyConversion() {
+        showLoading('Getting exchange rate...');
+        
+        fetch(`/car/payment/api/currency/{{ order.id }}/`, {
+            method: 'GET',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                currencyData = data;
+                updateCurrencyDisplay();
+                payButton.disabled = false;
+                loadingSpinner.style.display = 'none';
+                console.log('Currency conversion loaded:', data);
+            } else {
+                showError('Failed to get exchange rate: ' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Currency conversion error:', error);
+            showError('Failed to get exchange rate. Please refresh the page.');
+        });
+    }
+    
+    // Initialize payment with Paystack
+    function initializePaystackPayment() {
+        showLoading('Initializing payment...');
+        
+        fetch(`/car/payment/api/paystack/initialize/{{ order.id }}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                paymentData = data;
+                console.log('Payment initialized:', data);
+                openPaystackModal();
+            } else {
+                console.error('Payment initialization failed:', data.error);
+                showError('Payment initialization failed: ' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Payment initialization error:', error);
+            showError('Failed to initialize payment. Please try again.');
+        });
+    }
+    
+    function openPaystackModal() {
+        if (!paymentData || !currencyData) {
+            showError('Payment data not ready. Please try again.');
+            return;
+        }
+        
+        showLoading('Opening payment modal...');
+        
+        // Initialize Paystack Inline Payment
+        const handler = PaystackPop.setup({
+            key: '{{ paystack_public_key }}',
+            email: '{{ order.customer.email|default:"guest@example.com" }}',
+            amount: currencyData.kobo_amount,
+            currency: 'NGN',
+            ref: paymentData.reference,
+            firstname: '{{ order.dealer_name|truncatechars:50 }}',
+            lastname: 'Customer',
+            metadata: {
+                order_id: {{ order.id }},
+                order_number: '{{ order.order_number }}',
+                car_name: '{{ order.car_name }}',
+                customer_name: '{{ order.dealer_name }}',
+                rental_period: '{{ order.date_from|date:"M d, Y" }} - {{ order.date_to|date:"M d, Y" }}',
+                usd_amount: currencyData.usd_amount,
+                ngn_amount: currencyData.ngn_amount,
+                exchange_rate: currencyData.exchange_rate
+            },
+            callback: function(response) {
+                handlePaymentSuccess(response);
+            },
+            onClose: function() {
+                handlePaymentCancelled();
+            }
+        });
+
+        // Open the payment modal
+        handler.openIframe();
+    }
+    
+    function handlePaymentSuccess(response) {
+        showLoading('Verifying payment...');
+        
+        // Verify payment on server
+        fetch(`/car/payment/api/paystack/verify/${response.reference}/`, {
+            method: 'GET',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Payment verified successfully
+                showLoading('Payment successful! Redirecting...');
+                setTimeout(() => {
+                    window.location.href = `/car/payment/success/${data.order_id}/`;
+                }, 1500);
+            } else {
+                showError('Payment verification failed: ' + data.error + '. Reference: ' + response.reference);
+            }
+        })
+        .catch(error => {
+            console.error('Payment verification error:', error);
+            showError('Payment completed but verification failed. Please contact support with reference: ' + response.reference);
+        });
+    }
+    
+    function handlePaymentCancelled() {
+        loadingSpinner.style.display = 'none';
+        payButton.disabled = false;
+        updatePayButton();
+        
+        showError('Payment was cancelled. You can try again when ready.');
+        setTimeout(() => {
+            errorMessage.style.display = 'none';
+        }, 5000);
+    }
+
+    // Main payment button click handler
+    payButton.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        if (!currencyData) {
+            showError('Currency conversion not ready. Please wait a moment and try again.');
+            return;
+        }
+        
+        initializePaystackPayment();
+    });
+
+    // Helper function to get CSRF token
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    
+    // Initialize currency conversion on page load
+    fetchCurrencyConversion();
+});
+</script>
+{% endblock %}

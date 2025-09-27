@@ -1,0 +1,428 @@
+{% extends 'base_admin.html' %}
+{% load static %}
+{% block title %}Admin Dashboard - Brownie Car Rental{% endblock %}
+
+{% block admin_content %}
+<!-- Admin Dashboard Header -->
+<section class="admin-header py-4 bg-gradient-primary">
+    <div class="container-fluid">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h1 class="admin-title mb-2 text-white">
+                    <i class="fas fa-tachometer-alt me-3"></i>Admin Dashboard
+                </h1>
+                <p class="admin-subtitle mb-0 text-white-50">Welcome back, {{ user.get_full_name }}! Manage your car rental business efficiently.</p>
+            </div>
+            <div class="col-lg-4 text-end">
+                <div class="admin-actions">
+                    <a href="{% url 'car_create' %}" class="btn btn-success btn-lg">
+                        <i class="fas fa-plus me-2"></i>Add New Car
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Key Metrics Cards -->
+<section class="dashboard-metrics py-4">
+    <div class="container-fluid">
+        <div class="row g-4">
+            <!-- Total Orders -->
+            <div class="col-xl-3 col-md-6">
+                <div class="card metric-card border-0 shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="metric-icon bg-primary bg-gradient">
+                                <i class="fas fa-clipboard-list"></i>
+                            </div>
+                            <div class="metric-content ms-3">
+                                <div class="metric-number">{{ total_orders }}</div>
+                                <div class="metric-label">Total Orders</div>
+                                <div class="metric-trend text-success">
+                                    <i class="fas fa-arrow-up me-1"></i>{{ orders_growth }}% from last month
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Total Cars -->
+            <div class="col-xl-3 col-md-6">
+                <div class="card metric-card border-0 shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="metric-icon bg-success bg-gradient">
+                                <i class="fas fa-car"></i>
+                            </div>
+                            <div class="metric-content ms-3">
+                                <div class="metric-number">{{ total_cars }}</div>
+                                <div class="metric-label">Fleet Size</div>
+                                <div class="metric-trend text-info">
+                                    <i class="fas fa-info-circle me-1"></i>{{ available_cars }} available
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Revenue -->
+            <div class="col-xl-3 col-md-6">
+                <div class="card metric-card border-0 shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="metric-icon bg-warning bg-gradient">
+                                <i class="fas fa-dollar-sign"></i>
+                            </div>
+                            <div class="metric-content ms-3">
+                                <div class="metric-number">${{ total_revenue }}</div>
+                                <div class="metric-label">Total Revenue</div>
+                                <div class="metric-trend text-success">
+                                    <i class="fas fa-arrow-up me-1"></i>${{ monthly_revenue }} this month
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active Customers -->
+            <div class="col-xl-3 col-md-6">
+                <div class="card metric-card border-0 shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="metric-icon bg-info bg-gradient">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="metric-content ms-3">
+                                <div class="metric-number">{{ total_customers }}</div>
+                                <div class="metric-label">Customers</div>
+                                <div class="metric-trend text-success">
+                                    <i class="fas fa-user-plus me-1"></i>{{ new_customers }} new this month
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Quick Actions & Recent Activity -->
+<section class="dashboard-content py-4">
+    <div class="container-fluid">
+        <div class="row g-4">
+            <!-- Quick Actions -->
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-transparent">
+                        <h5 class="mb-0">
+                            <i class="fas fa-bolt me-2 text-warning"></i>Quick Actions
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            <a href="{% url 'car_create' %}" class="btn btn-outline-primary">
+                                <i class="fas fa-plus me-2"></i>Add New Car
+                            </a>
+                            <a href="{% url 'order_list' %}" class="btn btn-outline-success">
+                                <i class="fas fa-list me-2"></i>View All Orders
+                            </a>
+                            <a href="{% url 'message' %}" class="btn btn-outline-info">
+                                <i class="fas fa-envelope me-2"></i>Customer Messages
+                            </a>
+                            <a href="{% url 'admin:system_car_changelist' %}" class="btn btn-outline-warning">
+                                <i class="fas fa-cog me-2"></i>Django Admin
+                            </a>
+                            <button class="btn btn-outline-secondary" onclick="generateReport()">
+                                <i class="fas fa-chart-bar me-2"></i>Generate Report
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Orders -->
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-transparent d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="fas fa-clock me-2 text-primary"></i>Recent Orders
+                        </h5>
+                        <a href="{% url 'order_list' %}" class="btn btn-sm btn-outline-primary">View All</a>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Order #</th>
+                                        <th>Customer</th>
+                                        <th>Car</th>
+                                        <th>Date Range</th>
+                                        <th>Amount</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for order in recent_orders %}
+                                    <tr>
+                                        <td>
+                                            <strong>{{ order.order_number }}</strong>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="avatar-sm me-2">
+                                                    <div class="avatar-title bg-light text-muted rounded-circle">
+                                                        {{ order.customer.first_name.0|upper }}{{ order.customer.last_name.0|upper }}
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <div class="fw-medium">{{ order.customer.get_full_name }}</div>
+                                                    <div class="text-muted small">{{ order.customer.email }}</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <strong>{{ order.car_name }}</strong>
+                                        </td>
+                                        <td>
+                                            <div class="small">
+                                                <div>{{ order.date_from|date:"M d" }} - {{ order.date_to|date:"M d, Y" }}</div>
+                                                <div class="text-muted">{{ order.get_rental_duration_display }}</div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <strong class="text-success">${{ order.total_amount }}</strong>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-{{ order.get_status_display_class }}">
+                                                {{ order.get_status_display }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <a href="/car/detail/{{ order.id }}/" class="btn btn-outline-primary btn-sm">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a href="/car/order/{{ order.id }}/generate_receipt/" class="btn btn-outline-success btn-sm">
+                                                <i class="fas fa-download"></i>
+                                            </a>
+                                        </div>
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="7" class="text-center text-muted py-4">
+                                            <i class="fas fa-inbox fa-2x mb-2"></i>
+                                            <p>No recent orders found</p>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts and Analytics -->
+        <div class="row g-4 mt-2">
+            <!-- Revenue Chart -->
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-transparent">
+                        <h5 class="mb-0">
+                            <i class="fas fa-chart-line me-2 text-success"></i>Revenue Analytics
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="revenueChart" height="300"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Popular Cars -->
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-transparent">
+                        <h5 class="mb-0">
+                            <i class="fas fa-star me-2 text-warning"></i>Popular Cars
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        {% for car in popular_cars %}
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="flex-shrink-0">
+                                {% if car.image %}
+                                <img src="{{ car.image.url }}" alt="{{ car.car_name }}" class="rounded" style="width: 50px; height: 40px; object-fit: cover;">
+                                {% else %}
+                                <div class="bg-light rounded d-flex align-items-center justify-content-center" style="width: 50px; height: 40px;">
+                                    <i class="fas fa-car text-muted"></i>
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <div class="fw-medium">{{ car.car_name }}</div>
+                                <div class="small text-muted">{{ car.company_name }}</div>
+                            </div>
+                            <div class="text-end">
+                                <div class="text-warning">
+                                    <i class="fas fa-heart"></i> {{ car.like }}
+                                </div>
+                                <div class="small text-muted">${{ car.cost_par_day }}/day</div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                        <div class="text-center mt-3">
+                            <a href="{% url 'adminIndex' %}" class="btn btn-sm btn-outline-primary">View All Cars</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- System Status & Alerts -->
+        <div class="row g-4 mt-2">
+            <div class="col-lg-12">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-transparent">
+                        <h5 class="mb-0">
+                            <i class="fas fa-bell me-2 text-danger"></i>System Alerts & Notifications
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-info" role="alert">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>System Status:</strong> All systems operational. Last backup: {{ last_backup|timesince }} ago.
+                        </div>
+                        
+                        {% if pending_orders_count > 0 %}
+                        <div class="alert alert-warning" role="alert">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <strong>Attention:</strong> {{ pending_orders_count }} orders require your attention.
+                            <a href="{% url 'order_list' %}?status=pending" class="alert-link">Review Now</a>
+                        </div>
+                        {% endif %}
+
+                        {% if low_stock_cars %}
+                        <div class="alert alert-danger" role="alert">
+                            <i class="fas fa-car me-2"></i>
+                            <strong>Inventory Alert:</strong> Some cars have high booking rates. Consider adding similar models.
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+// Revenue Chart
+const ctx = document.getElementById('revenueChart').getContext('2d');
+const revenueChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: {{ revenue_labels|safe }},
+        datasets: [{
+            label: 'Revenue ($)',
+            data: {{ revenue_data|safe }},
+            borderColor: '#0d6efd',
+            backgroundColor: 'rgba(13, 110, 253, 0.1)',
+            tension: 0.4
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                display: false
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+
+// Generate Report Function
+function generateReport() {
+    // Implementation for report generation
+    alert('Report generation feature coming soon!');
+}
+</script>
+
+<style>
+.admin-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.metric-card {
+    transition: transform 0.2s ease;
+}
+
+.metric-card:hover {
+    transform: translateY(-5px);
+}
+
+.metric-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.5rem;
+}
+
+.metric-number {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #2c3e50;
+}
+
+.metric-label {
+    color: #7f8c8d;
+    font-size: 0.9rem;
+    margin-bottom: 4px;
+}
+
+.metric-trend {
+    font-size: 0.8rem;
+}
+
+.avatar-sm {
+    width: 32px;
+    height: 32px;
+}
+
+.avatar-title {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.card {
+    transition: box-shadow 0.15s ease-in-out;
+}
+
+.card:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
+</style>
+
+{% endblock %}

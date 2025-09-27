@@ -1,62 +1,521 @@
 {% load static %}
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{% block title %} Car Rental System {% endblock %}</title>
-
-    <link href="http://fonts.googleapis.com/css?family=Lato" rel="stylesheet" type="text/css">
-    <link href="http://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet" type="text/css">
-    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Brownie Car Rental - Premium Car Rental Service{% endblock %}</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTggMTZIMjRNOCAxNkw0IDEyTTggMTZMNCAyME0yNCAxNkwyOCAxMk0yNCAxNkwyOCAyMCIgc3Ryb2tlPSIjMzQ5OGRiIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgo8L3N2Zz4K">
+    
+    <!-- Google Fonts preconnect -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <!-- Bootstrap 5.3.2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- AOS Animation Library -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
+    <!-- Chart.js for Analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Optimized Custom CSS -->
+    <link rel="stylesheet" href="{% static 'css/optimized.css' %}">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
-    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
-    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-    </head>
+    
+    <!-- Resource hints for better performance -->
+    <link rel="dns-prefetch" href="//fonts.googleapis.com">
+    <link rel="dns-prefetch" href="//fonts.gstatic.com">
+    <link rel="dns-prefetch" href="//cdn.jsdelivr.net">
+    <link rel="dns-prefetch" href="//cdnjs.cloudflare.com">
+    <link rel="dns-prefetch" href="//unpkg.com">
+    
+    <!-- Preload critical resources -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@400;500;600;700;800;900&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@400;500;600;700;800;900&display=swap"></noscript>
+    
+    {% block extra_css %}{% endblock %}
+</head>
 <body>
 
-    <nav class="navbar navbar-custom navbar-fixed-top">
-        <div class="container">
-          <div class="navbar-header">
-              <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#myNavbar" aria-expanded="false">
-                  <span class="sr-only">Toggle navigation</span>
-                  <span class="glyphicon glyphicon-align-justify"></span>
-              </button>
-              <a class="navbar-brand" href="#"><span class="glyphicon glyphicon-fire"></span> Brownie Car Rental</a>
-          </div>
-      
-          <div class="collapse navbar-collapse" id="myNavbar">
-              {% block search %}
-              <form method="GET" class="navbar-form navbar-right" role="search">
-                  <div class="form-group">
-                      <input type="text" class="form-control" placeholder="Car Search" value="{{request.GET.q}}" name="q">
-                  </div>
-                  <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-search"></span> Search</button>
-              </form>
-              {% endblock %}
-      
-              <ul class="nav navbar-nav navbar-right">
-                  {% block nav %}
-                  {% if user.is_authenticated %}
-                  <li><a href="{% url 'newcar' %}"><span class="glyphicon glyphicon-align-justify"></span> Newly Added Car</a></li>
-                  <li><a href="{% url 'popularcar' %}"><span class="glyphicon glyphicon-star"></span> Popular Car</a></li>
-                  <li><a href="{% url 'contact' %}"><span class="glyphicon glyphicon-envelope"></span> Contact</a></li>
-                  <li><a href="{% url 'logout' %}"><span class="glyphicon glyphicon-share"></span> Logout</a></li>
-                  {% else %}
-                  <li><a href="{% url 'login' %}"><span class="glyphicon glyphicon-share"></span> Login</a></li>
-                  {% endif %}
-                  {% endblock %}
-              </ul>
-          </div>
+    <!-- Loading Spinner -->
+    <div id="loading" class="loading-overlay">
+        <div class="loading-spinner">
+            <i class="fas fa-car fa-3x text-primary"></i>
+            <div class="loading-text">Loading...</div>
         </div>
-      </nav>
-      
-      {% block body %}
-      <div class="container">
-          <!-- Page content goes here -->
-      </div>
-      {% endblock %}
+    </div>
+    
+    <!-- Loading Styles -->
+    <style>
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.3s ease;
+        }
+        
+        .loading-spinner {
+            text-align: center;
+            color: #007bff;
+        }
+        
+        .loading-spinner i {
+            animation: pulse 2s infinite;
+        }
+        
+        .loading-text {
+            margin-top: 1rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        /* Navbar Styles */
+        .navbar {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.95) 0%, rgba(118, 75, 162, 0.95) 100%);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            text-decoration: none;
+        }
+        
+        .brand-icon-container {
+            position: relative;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .brand-text {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 800;
+        }
+        
+        .brand-subtitle {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.8rem;
+            display: block;
+            margin-top: -5px;
+        }
+        
+        .navbar-toggler {
+            border: none;
+            padding: 0.5rem;
+        }
+        
+        .navbar-toggler-line {
+            display: block;
+            width: 25px;
+            height: 3px;
+            background: white;
+            margin: 5px 0;
+            transition: 0.3s;
+        }
+        
+        .nav-link {
+            color: rgba(255, 255, 255, 0.9) !important;
+            font-weight: 500;
+            padding: 0.5rem 1rem !important;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            margin: 0 0.2rem;
+        }
+        
+        .nav-link:hover {
+            color: white !important;
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .dropdown-menu {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Search Form Styles */
+        .advanced-search-form {
+            max-width: 400px;
+            width: 100%;
+        }
+        
+        .search-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 25px;
+            padding: 0.5rem;
+            backdrop-filter: blur(10px);
+        }
+        
+        .search-icon {
+            color: rgba(255, 255, 255, 0.7);
+            margin-left: 0.5rem;
+        }
+        
+        .search-input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            color: white;
+            padding: 0.5rem;
+            outline: none;
+            font-size: 0.9rem;
+        }
+        
+        .search-input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        .search-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 0.5rem;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .search-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+    </style>
+
+    <!-- Advanced Modern Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNavbar">
+        <div class="container-fluid px-4">
+            <!-- Enhanced Brand -->
+            <a class="navbar-brand d-flex align-items-center" href="{% if user.is_authenticated and user.is_superuser %}{% url 'adminIndex' %}{% else %}{% url 'home' %}{% endif %}">
+                <div class="brand-icon-container me-3">
+                    <i class="fas fa-car"></i>
+                    <div class="brand-accent"></div>
+                </div>
+                <div class="brand-text-container">
+                    <span class="brand-text">Brownie</span>
+                    <span class="brand-subtitle">Car Rental</span>
+                </div>
+            </a>
+            
+            <!-- Advanced Mobile Toggle -->
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-line"></span>
+                <span class="navbar-toggler-line"></span>
+                <span class="navbar-toggler-line"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <!-- Advanced Search Form -->
+                {% block search %}
+                <div class="d-flex mx-auto">
+                    <form method="GET" class="advanced-search-form" role="search">
+                        <div class="search-container">
+                            <div class="search-icon">
+                                <i class="fas fa-search"></i>
+                            </div>
+                            <input type="text" class="search-input" placeholder="Search luxury cars, SUVs, sedans..." value="{{request.GET.q}}" name="q">
+                            <button class="search-btn" type="submit">
+                                <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                {% endblock %}
+                
+                <!-- Navigation Links -->
+                <ul class="navbar-nav ms-auto">
+                    {% block nav %}
+                    {% if user.is_authenticated %}
+                        {% if user.is_superuser %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'adminIndex' %}">
+                                    <i class="fas fa-tachometer-alt me-1"></i> Dashboard
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'car_create' %}">
+                                    <i class="fas fa-plus me-1"></i> Add Car
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'order_list' %}">
+                                    <i class="fas fa-clipboard-list me-1"></i> Orders
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'message' %}">
+                                    <i class="fas fa-envelope me-1"></i> Messages
+                                </a>
+                            </li>
+                        {% else %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'system:newcar' %}">
+                                    <i class="fas fa-car me-1"></i> New Cars
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'system:popularcar' %}">
+                                    <i class="fas fa-star me-1"></i> Popular Cars
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'system:contact' %}">
+                                    <i class="fas fa-envelope me-1"></i> Contact
+                                </a>
+                            </li>
+                        {% endif %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-user-circle me-1"></i> {{request.user.username}}
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="{% url 'logout' %}">
+                                    <i class="fas fa-sign-out-alt me-2"></i> Logout
+                                </a></li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'home' %}">
+                                <i class="fas fa-home me-1"></i> Home
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'system:about' %}">
+                                <i class="fas fa-info-circle me-1"></i> About
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'system:services' %}">
+                                <i class="fas fa-cogs me-1"></i> Services
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'system:car_list' %}">
+                                <i class="fas fa-car me-1"></i> Cars
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'system:reviews' %}">
+                                <i class="fas fa-star me-1"></i> Reviews
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'system:contact' %}">
+                                <i class="fas fa-envelope me-1"></i> Contact
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'system:booking' %}">
+                                <i class="fas fa-calendar-alt me-1"></i> Book Now
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'login' %}">
+                                <i class="fas fa-sign-in-alt me-1"></i> Login
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link btn btn-primary text-white ms-2 px-3 rounded-pill" href="{% url 'register' %}">
+                                <i class="fas fa-user-plus me-1"></i> Register
+                            </a>
+                        </li>
+                    {% endif %}
+                    {% endblock %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Main Content -->
+    <main class="main-content" style="padding-top: 80px;">
+        {% block body %}
+        <!-- Page content goes here -->
+        {% endblock %}
+    </main>
+    
+    <!-- Modern Footer -->
+    <footer class="footer bg-dark text-light py-5 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 mb-4">
+                    <h5 class="text-primary mb-3">
+                        <i class="fas fa-car me-2"></i>Brownie Car Rental
+                    </h5>
+                    <p class="text-light">Premium car rental service providing luxury and comfort for all your transportation needs.</p>
+                    <div class="social-links">
+                        <a href="#" class="text-light me-3"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="text-light me-3"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-light me-3"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-light"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <h6 class="text-primary mb-3">Quick Links</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="{% url 'home' %}" class="text-light text-decoration-none footer-link">Home</a></li>
+                        <li><a href="{% url 'system:about' %}" class="text-light text-decoration-none footer-link">About</a></li>
+                        <li><a href="{% url 'system:services' %}" class="text-light text-decoration-none footer-link">Services</a></li>
+                        <li><a href="{% url 'system:car_list' %}" class="text-light text-decoration-none footer-link">Cars</a></li>
+                        <li><a href="{% url 'system:reviews' %}" class="text-light text-decoration-none footer-link">Reviews</a></li>
+                        <li><a href="{% url 'system:contact' %}" class="text-light text-decoration-none footer-link">Contact</a></li>
+                        <li><a href="{% url 'system:booking' %}" class="text-light text-decoration-none footer-link">Book Now</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <h6 class="text-primary mb-3">Contact Info</h6>
+                    <ul class="list-unstyled text-light">
+                        <li class="mb-2"><i class="fas fa-map-marker-alt me-2 text-primary"></i>123 Premium Drive, Downtown</li>
+                        <li class="mb-2"><i class="fas fa-phone me-2 text-primary"></i>+1 (555) 123-4567</li>
+                        <li class="mb-2"><i class="fas fa-envelope me-2 text-primary"></i>info@browniecarrental.com</li>
+                        <li class="mb-2"><i class="fas fa-globe me-2 text-primary"></i>www.browniecarrental.com</li>
+                    </ul>
+                </div>
+                <div class="col-lg-3 col-md-12 mb-4">
+                    <h6 class="text-primary mb-3">Business Hours</h6>
+                    <ul class="list-unstyled text-light">
+                        <li class="mb-1"><i class="fas fa-clock me-2 text-primary"></i>Monday - Friday: 8:00 AM - 8:00 PM</li>
+                        <li class="mb-1"><i class="fas fa-clock me-2 text-primary"></i>Saturday: 9:00 AM - 6:00 PM</li>
+                        <li class="mb-1"><i class="fas fa-clock me-2 text-primary"></i>Sunday: 10:00 AM - 4:00 PM</li>
+                        <li class="mt-2"><small class="text-warning"><i class="fas fa-info-circle me-1"></i>24/7 Emergency Support Available</small></li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="border-secondary">
+            <div class="row">
+                <div class="col-md-6">
+                    <p class="mb-0 text-light">&copy; 2025 Brownie Car Rental. All rights reserved.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p class="mb-0 text-light">Made with <i class="fas fa-heart text-danger"></i> for car enthusiasts</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- AOS Animation JS -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    
+    <!-- Enhanced Custom JavaScript -->
+    <script>
+        // Fallback if static JS file fails to load
+        function initializeApp() {
+            console.log('App initialized');
+        }
+    </script>
+    <script src="{% static 'js/app.js' %}" onerror="initializeApp();"></script>
+    
+    <!-- Loading Spinner Control -->
+    <script>
+        // Enhanced loading spinner control with error handling
+        document.addEventListener('DOMContentLoaded', function() {
+            try {
+                const loadingSpinner = document.getElementById('loading');
+                if (loadingSpinner) {
+                    loadingSpinner.style.opacity = '0';
+                    setTimeout(() => {
+                        loadingSpinner.style.display = 'none';
+                    }, 300);
+                }
+                
+                // Initialize AOS if available
+                if (typeof AOS !== 'undefined') {
+                    AOS.init({
+                        duration: 1000,
+                        easing: 'ease-in-out',
+                        once: true,
+                        mirror: false,
+                        offset: 100
+                    });
+                }
+            } catch (error) {
+                console.warn('Error initializing page:', error);
+                // Ensure spinner is hidden even if there's an error
+                const spinner = document.getElementById('loading');
+                if (spinner) spinner.style.display = 'none';
+            }
+        });
+        
+        // Also hide on window load as backup
+        window.addEventListener('load', function() {
+            const loadingSpinner = document.getElementById('loading');
+            if (loadingSpinner) {
+                loadingSpinner.style.opacity = '0';
+                setTimeout(() => {
+                    loadingSpinner.style.display = 'none';
+                }, 100);
+            }
+        });
+        
+        // Show loading spinner for form submissions and navigation
+        document.addEventListener('DOMContentLoaded', function() {
+            const forms = document.querySelectorAll('form');
+            const links = document.querySelectorAll('a[href]:not([href^="#"]):not([href^="javascript:"]):not([target="_blank"])');
+            
+            function showLoading() {
+                const loadingSpinner = document.getElementById('loading');
+                if (loadingSpinner) {
+                    loadingSpinner.style.display = 'flex';
+                    loadingSpinner.style.opacity = '1';
+                }
+            }
+            
+            forms.forEach(form => {
+                form.addEventListener('submit', showLoading);
+            });
+            
+            links.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    if (this.href && this.href !== window.location.href) {
+                        showLoading();
+                    }
+                });
+            });
+        });
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+    
 </body>
 </html>

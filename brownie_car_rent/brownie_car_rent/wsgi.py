@@ -11,6 +11,6 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'brownie_car_rent.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'brownie_car_rent.settings.development')
 
 application = get_wsgi_application()

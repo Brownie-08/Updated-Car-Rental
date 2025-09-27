@@ -1,0 +1,397 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}About Us - {{ block.super }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .about-hero {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .about-hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.1);
+    }
+    
+    .hero-icon {
+        position: relative;
+        z-index: 2;
+    }
+    
+    .about-section {
+        background: #f8f9fa;
+    }
+    
+    .mission-card, .vision-card {
+        background: #fff;
+        padding: 2.5rem;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        border: none;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        height: 100%;
+    }
+    
+    .mission-card:hover, .vision-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    }
+    
+    .section-title {
+        font-size: 2.5rem;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 1rem;
+    }
+    
+    .section-subtitle {
+        font-size: 1.1rem;
+        color: #666;
+        margin-bottom: 2rem;
+    }
+    
+    .feature-item {
+        display: flex;
+        align-items: center;
+        font-size: 1.1rem;
+    }
+    
+    .stats-section {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+    
+    .stat-item {
+        padding: 2rem 1rem;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        backdrop-filter: blur(10px);
+        transition: transform 0.3s ease;
+    }
+    
+    .stat-item:hover {
+        transform: translateY(-5px);
+    }
+    
+    .stat-number {
+        font-size: 3rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+    
+    .stat-label {
+        font-size: 1.1rem;
+        opacity: 0.9;
+    }
+    
+    .team-member {
+        padding: 2rem 1rem;
+        background: #fff;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+    }
+    
+    .team-member:hover {
+        transform: translateY(-5px);
+    }
+    
+    .member-image img {
+        width: 150px;
+        height: 150px;
+        object-fit: cover;
+    }
+    
+    .member-name {
+        font-size: 1.3rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+    
+    .member-position {
+        margin-bottom: 1rem;
+    }
+    
+    .social-links {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+    }
+    
+    .social-link {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        background: #007bff;
+        color: white;
+        border-radius: 50%;
+        text-decoration: none;
+        transition: background 0.3s ease;
+    }
+    
+    .social-link:hover {
+        background: #0056b3;
+        color: white;
+    }
+    
+    .member-fallback-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 150px;
+        height: 150px;
+        background: #f8f9fa;
+        border-radius: 50%;
+        border: 2px solid #e9ecef;
+        margin: 0 auto;
+    }
+    
+    .member-fallback-icon i {
+        font-size: 4rem;
+        color: #6c757d;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Initialize AOS animations
+    if (typeof AOS !== 'undefined') {
+        AOS.init({
+            duration: 800,
+            delay: 100,
+            once: true,
+            mirror: false
+        });
+    }
+</script>
+{% endblock %}
+
+{% block body %}
+<!-- About Hero Section -->
+<section class="about-hero py-5" style="margin-left: -15px; margin-right: -15px; margin-top: -1.5rem;">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center" data-aos="fade-up">
+                <div class="hero-icon mb-4">
+                    <i class="fas fa-users text-primary display-3"></i>
+                </div>
+                <h1 class="display-4 fw-bold text-white mb-4">About Brownie Car Rental</h1>
+                <p class="lead text-white-50 mb-5">Your trusted partner in premium transportation solutions since 2010. Discover our story and commitment to excellence.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- About Story Section -->
+<section class="about-section py-5 bg-light" style="margin-left: -15px; margin-right: -15px;">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6" data-aos="fade-right">
+                <div class="about-content">
+                    <h2 class="section-title mb-4">Our Story</h2>
+                    <p class="lead mb-4">
+                        Founded in 2010, Brownie Car Rental began as a small family business with a simple vision: to provide reliable, 
+                        affordable, and convenient car rental solutions that exceed customer expectations.
+                    </p>
+                    <p class="mb-4">
+                        Over the years, we've grown from a single location to a trusted network serving customers across the region. 
+                        Our commitment to quality service, competitive pricing, and customer satisfaction has remained unchanged 
+                        throughout our journey.
+                    </p>
+                    <p class="mb-4">
+                        Today, we're proud to offer a diverse fleet of over 500 vehicles, from economical city cars to luxury 
+                        sedans and spacious SUVs. Every vehicle in our fleet is meticulously maintained and regularly inspected 
+                        to ensure your safety and comfort.
+                    </p>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="feature-item mb-3">
+                                <i class="fas fa-check-circle text-primary me-2"></i>
+                                <span>24/7 Customer Support</span>
+                            </div>
+                            <div class="feature-item mb-3">
+                                <i class="fas fa-check-circle text-primary me-2"></i>
+                                <span>Wide Range of Vehicles</span>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="feature-item mb-3">
+                                <i class="fas fa-check-circle text-primary me-2"></i>
+                                <span>Competitive Prices</span>
+                            </div>
+                            <div class="feature-item mb-3">
+                                <i class="fas fa-check-circle text-primary me-2"></i>
+                                <span>Easy Online Booking</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6" data-aos="fade-left">
+                <div class="about-image">
+                    <img src="{% static 'images/main.jpg' %}" alt="About Brownie Car Rental" class="img-fluid rounded shadow" 
+                         onerror="this.src='https://images.unsplash.com/photo-1449824913935-59a10b8d2000?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80'">
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Mission & Vision Section -->
+<section class="mission-vision py-5" style="margin-left: -15px; margin-right: -15px;">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 text-center mb-5" data-aos="fade-up">
+                <h2 class="display-5 fw-bold mb-4">Our Mission & Vision</h2>
+                <p class="lead text-muted">Driving towards a future of exceptional automotive experiences</p>
+            </div>
+        </div>
+        <div class="row g-4">
+            <div class="col-lg-6" data-aos="fade-up" data-aos-delay="100">
+                <div class="mission-card h-100">
+                    <div class="card-icon mb-4">
+                        <i class="fas fa-bullseye text-primary display-4"></i>
+                    </div>
+                    <h4 class="card-title mb-3">Our Mission</h4>
+                    <p class="card-text">
+                        To provide exceptional car rental experiences that combine premium vehicles, outstanding customer service, 
+                        and competitive pricing. We strive to make every journey comfortable, safe, and memorable for our customers, 
+                        while building lasting relationships based on trust and reliability.
+                    </p>
+                </div>
+            </div>
+            <div class="col-lg-6" data-aos="fade-up" data-aos-delay="200">
+                <div class="vision-card h-100">
+                    <div class="card-icon mb-4">
+                        <i class="fas fa-eye text-success display-4"></i>
+                    </div>
+                    <h4 class="card-title mb-3">Our Vision</h4>
+                    <p class="card-text">
+                        To become the leading car rental company recognized for innovation, sustainability, and customer-centric 
+                        solutions. We envision a future where our technology-driven services and eco-friendly fleet contribute 
+                        to smarter, cleaner transportation options for communities worldwide.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="stats-section py-5 bg-light" style="margin-left: -15px; margin-right: -15px;">
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-lg-3 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="stat-item">
+                    <i class="fas fa-car text-primary fs-1 mb-3"></i>
+                    <h3 class="stat-number">500+</h3>
+                    <p class="stat-label">Cars Available</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="stat-item">
+                    <i class="fas fa-users text-primary fs-1 mb-3"></i>
+                    <h3 class="stat-number">10,000+</h3>
+                    <p class="stat-label">Happy Customers</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="300">
+                <div class="stat-item">
+                    <i class="fas fa-map-marker-alt text-primary fs-1 mb-3"></i>
+                    <h3 class="stat-number">50+</h3>
+                    <p class="stat-label">Locations</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="400">
+                <div class="stat-item">
+                    <i class="fas fa-clock text-primary fs-1 mb-3"></i>
+                    <h3 class="stat-number">24/7</h3>
+                    <p class="stat-label">Support</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Team Section -->
+<section class="team-section py-5" style="margin-left: -15px; margin-right: -15px;">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 text-center mb-5" data-aos="fade-up">
+                <h2 class="section-title">Our Team</h2>
+                <p class="section-subtitle">Meet the professionals behind our success</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-4 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="team-member text-center">
+                    <div class="member-image mb-3">
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=300&h=300&q=80" 
+                             alt="John Doe" class="img-fluid rounded-circle" 
+                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div class="member-fallback-icon" style="display: none;">
+                            <i class="fas fa-user"></i>
+                        </div>
+                    </div>
+                    <h4 class="member-name">John Doe</h4>
+                    <p class="member-position text-muted">CEO & Founder</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="team-member text-center">
+                    <div class="member-image mb-3">
+                        <img src="https://images.unsplash.com/photo-1494790108755-2616b612b829?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=300&h=300&q=80" 
+                             alt="Jane Smith" class="img-fluid rounded-circle" 
+                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div class="member-fallback-icon" style="display: none;">
+                            <i class="fas fa-user"></i>
+                        </div>
+                    </div>
+                    <h4 class="member-name">Jane Smith</h4>
+                    <p class="member-position text-muted">Operations Manager</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="300">
+                <div class="team-member text-center">
+                    <div class="member-image mb-3">
+                        <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=300&h=300&q=80" 
+                             alt="Mike Johnson" class="img-fluid rounded-circle" 
+                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div class="member-fallback-icon" style="display: none;">
+                            <i class="fas fa-user"></i>
+                        </div>
+                    </div>
+                    <h4 class="member-name">Mike Johnson</h4>
+                    <p class="member-position text-muted">Customer Service</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

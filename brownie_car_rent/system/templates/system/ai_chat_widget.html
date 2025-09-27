@@ -1,0 +1,202 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brownie Assistant</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome for icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'system/css/ai-chat-widget.css' %}">
+</head>
+<body>
+    <!-- Chat Widget Container -->
+    <div id="brownie-chat-widget" class="chat-widget">
+        <!-- Chat Toggle Button -->
+        <div id="chat-toggle-btn" class="chat-toggle-btn">
+            <i class="fas fa-comments"></i>
+            <span class="notification-badge" id="notification-badge" style="display: none;">1</span>
+        </div>
+        
+        <!-- Chat Window -->
+        <div id="chat-window" class="chat-window" style="display: none;">
+            <!-- Chat Header -->
+            <div class="chat-header">
+                <div class="d-flex align-items-center">
+                    <div class="chat-avatar">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="chat-title-info">
+                        <h6 class="chat-title mb-0">Brownie Assistant</h6>
+                        <small class="chat-status">Online - Always here to help</small>
+                    </div>
+                </div>
+                <div class="chat-controls">
+                    <button id="minimize-btn" class="btn btn-sm btn-outline-light">
+                        <i class="fas fa-minus"></i>
+                    </button>
+                    <button id="close-btn" class="btn btn-sm btn-outline-light">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Chat Messages Area -->
+            <div id="chat-messages" class="chat-messages">
+                <!-- Typing Indicator -->
+                <div id="typing-indicator" class="message bot-message typing-indicator" style="display: none;">
+                    <div class="message-avatar">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="message-content">
+                        <div class="typing-dots">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Quick Replies -->
+            <div id="quick-replies" class="quick-replies" style="display: none;">
+                <!-- Quick reply buttons will be inserted here -->
+            </div>
+            
+            <!-- Car Cards Container -->
+            <div id="car-cards-container" class="car-cards-container" style="display: none;">
+                <!-- Car cards will be inserted here -->
+            </div>
+            
+            <!-- Booking Progress -->
+            <div id="booking-progress" class="booking-progress" style="display: none;">
+                <div class="progress-header">
+                    <span class="progress-title">Booking Progress</span>
+                    <span class="progress-step">Step <span id="current-step">1</span> of <span id="total-steps">5</span></span>
+                </div>
+                <div class="progress">
+                    <div id="progress-bar" class="progress-bar bg-primary" role="progressbar" style="width: 20%;"></div>
+                </div>
+            </div>
+            
+            <!-- Chat Input Area -->
+            <div class="chat-input-area">
+                <form id="chat-form" class="d-flex align-items-end gap-2">
+                    <div class="flex-grow-1">
+                        <textarea 
+                            id="chat-input" 
+                            class="form-control" 
+                            placeholder="Type your message here..."
+                            rows="1"
+                            maxlength="1000"
+                        ></textarea>
+                        <div class="input-actions mt-1">
+                            <small class="text-muted">Press Enter to send, Shift+Enter for new line</small>
+                        </div>
+                    </div>
+                    <button type="submit" id="send-btn" class="btn btn-primary" disabled>
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal for Car Details -->
+    <div class="modal fade" id="carDetailsModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Car Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="car-details-content">
+                    <!-- Car details will be loaded here -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="select-car-btn">Select This Car</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal for Contact Form -->
+    <div class="modal fade" id="contactFormModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Contact Information</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="contact-form">
+                        <div class="mb-3">
+                            <label for="customer-name" class="form-label">Full Name *</label>
+                            <input type="text" class="form-control" id="customer-name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="customer-email" class="form-label">Email Address *</label>
+                            <input type="email" class="form-control" id="customer-email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="customer-phone" class="form-label">Phone Number *</label>
+                            <input type="tel" class="form-control" id="customer-phone" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="save-contact-btn">Save & Continue</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Chat Widget JavaScript -->
+    <script src="{% static 'system/js/ai-chat-widget.js' %}"></script>
+    
+    <script>
+        // Initialize chat widget when document is ready
+        document.addEventListener('DOMContentLoaded', function() {
+            // Configuration
+            const chatConfig = {
+                apiBaseUrl: '{% url "ai_chat_api:create_session" %}',
+                sessionId: null,
+                user: {
+                    authenticated: {% if user.is_authenticated %}true{% else %}false{% endif %},
+                    name: '{% if user.is_authenticated %}{{ user.first_name }} {{ user.last_name }}{% endif %}',
+                    email: '{% if user.is_authenticated %}{{ user.email }}{% endif %}'
+                },
+                autoStart: true,
+                showWelcome: true
+            };
+            
+            // Initialize the chat widget
+            window.brownieChatWidget = new BrownieChatWidget(chatConfig);
+            
+            // Auto-show welcome message after 3 seconds if first visit
+            if (!localStorage.getItem('brownie_chat_visited')) {
+                setTimeout(() => {
+                    const notificationBadge = document.getElementById('notification-badge');
+                    if (notificationBadge) {
+                        notificationBadge.style.display = 'block';
+                        notificationBadge.textContent = '💬';
+                    }
+                }, 3000);
+                
+                localStorage.setItem('brownie_chat_visited', 'true');
+            }
+        });
+    </script>
+</body>
+</html>

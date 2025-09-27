@@ -1,0 +1,301 @@
+{% load static %}
+
+<!-- CSRF Token for AJAX requests -->
+<meta name="csrf-token" content="{{ csrf_token }}">
+
+<!-- AI Chat Widget Toggle and Modal -->
+<div id="chat-widget-toggle">
+    <!-- Chat Toggle Button -->
+    <button id="chat-toggle-btn" class="chat-toggle-btn" aria-label="Open Chat">
+        <i class="fas fa-comment"></i>
+    </button>
+    
+    <!-- Chat Widget Modal -->
+    <div id="chat-widget-modal" class="chat-widget-modal">
+        <!-- Chat Header -->
+        <div class="chat-header">
+            <div class="chat-header-content">
+                <div class="chat-header-avatar">
+                    <div id="bot-avatar" class="bot-avatar">
+                        🤖
+                    </div>
+                </div>
+                <div class="chat-header-info">
+                    <h5>
+                        <span class="status-indicator"></span>
+                        <span id="assistant-name">Brownie Assistant</span>
+                    </h5>
+                    <small id="assistant-status">We typically reply instantly</small>
+                </div>
+            </div>
+            <div class="chat-header-actions">
+                <div id="user-context-indicator" class="user-context-indicator" style="display: none;">
+                    <span class="context-badge"></span>
+                </div>
+                <button class="chat-minimize-btn" aria-label="Minimize Chat">
+                    <i class="fas fa-minus"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Chat Widget Container -->
+        <div id="chat-widget">
+            <!-- User Welcome Section -->
+            <div id="user-welcome-section" class="user-welcome-section" style="display: none;">
+                <div class="user-avatar-display">
+                    <div id="user-avatar" class="user-avatar">
+                        U
+                    </div>
+                    <div class="user-info">
+                        <span id="user-greeting">Welcome!</span>
+                        <small id="user-status">Anonymous User</small>
+                    </div>
+                </div>
+                <div class="personalization-indicators">
+                    <span id="returning-user-badge" class="indicator-badge returning-badge" style="display: none;">
+                        <i class="fas fa-history"></i> Returning
+                    </span>
+                    <span id="authenticated-badge" class="indicator-badge auth-badge" style="display: none;">
+                        <i class="fas fa-shield-alt"></i> Verified
+                    </span>
+                    <span id="customer-badge" class="indicator-badge customer-badge" style="display: none;">
+                        <i class="fas fa-crown"></i> Customer
+                    </span>
+                </div>
+            </div>
+            
+            <!-- Chat Messages -->
+            <div class="chat-messages" id="chat-messages-container">
+                <!-- Messages will be dynamically added here -->
+            </div>
+            
+            <!-- Typing Indicator -->
+            <div class="typing-indicator" id="typing-indicator">
+                🤖 Brownie Assistant is typing...
+            </div>
+            
+            <!-- Chat Input -->
+            <div class="chat-input">
+                <div class="chat-input-group">
+                    <input 
+                        type="text" 
+                        placeholder="Type your message..." 
+                        maxlength="500"
+                        autocomplete="off"
+                        aria-label="Type your message"
+                    >
+                    <button type="button" aria-label="Send message" disabled>
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chat Widget Styles -->
+<link rel="stylesheet" href="{% static 'css/chat-widget.css' %}">
+
+<!-- Chat Widget JavaScript -->
+<script src="{% static 'js/chat-widget.js' %}" defer></script>
+
+<!-- Chat Widget Toggle Script -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const toggleBtn = document.getElementById('chat-toggle-btn');
+    const modal = document.getElementById('chat-widget-modal');
+    const minimizeBtn = modal.querySelector('.chat-minimize-btn');
+    
+    let isOpen = false;
+    
+    // Toggle chat widget
+    function toggleChat() {
+        isOpen = !isOpen;
+        
+        if (isOpen) {
+            modal.classList.add('active');
+            toggleBtn.classList.add('active');
+            toggleBtn.innerHTML = '<i class="fas fa-times"></i>';
+            toggleBtn.setAttribute('aria-label', 'Close Chat');
+            
+            // Initialize chat widget if not already done
+            if (!window.chatWidget) {
+                try {
+                    console.log('Attempting to initialize ChatWidget...');
+                    
+                    // Check if ChatWidget class is available
+                    if (typeof ChatWidget === 'undefined') {
+                        console.error('ChatWidget class is not defined. Check if script loaded correctly.');
+                        return;
+                    }
+                    
+                    window.chatWidget = new ChatWidget({
+                        containerId: 'chat-widget',
+                        apiBase: '/api/ai-chat/',
+                        autoGreeting: true
+                    });
+                    console.log('ChatWidget initialized successfully');
+                } catch (error) {
+                    console.error('Failed to initialize chat widget:', error);
+                    console.error('Error stack:', error.stack);
+                    
+                    // Show simple error message in chat area
+                    const chatMessages = document.getElementById('chat-messages-container');
+                    if (chatMessages) {
+                        chatMessages.innerHTML = '<div style="padding: 20px; text-align: center; color: #dc3545;">Chat is temporarily unavailable. Please refresh and try again.</div>';
+                    }
+                }
+            } else {
+                console.log('ChatWidget already initialized');
+            }
+        } else {
+            modal.classList.remove('active');
+            toggleBtn.classList.remove('active');
+            toggleBtn.innerHTML = '<i class="fas fa-comment"></i>';
+            toggleBtn.setAttribute('aria-label', 'Open Chat');
+        }
+    }
+    
+    // Event listeners
+    toggleBtn.addEventListener('click', toggleChat);
+    minimizeBtn.addEventListener('click', toggleChat);
+    
+    // Close on Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && isOpen) {
+            toggleChat();
+        }
+    });
+    
+    // Close on outside click (optional)
+    document.addEventListener('click', function(e) {
+        if (isOpen && !modal.contains(e.target) && !toggleBtn.contains(e.target)) {
+            // Uncomment the line below to enable click-outside-to-close
+            // toggleChat();
+        }
+    });
+    
+    // Accessibility: Focus management
+    modal.addEventListener('transitionend', function() {
+        if (isOpen) {
+            const inputField = modal.querySelector('.chat-input input');
+            if (inputField) {
+                inputField.focus();
+            }
+        }
+    });
+    
+    // Add notification badge (optional)
+    function showNotificationBadge(count = 1) {
+        let badge = toggleBtn.querySelector('.notification-badge');
+        if (!badge) {
+            badge = document.createElement('span');
+            badge.className = 'notification-badge';
+            badge.style.cssText = `
+                position: absolute;
+                top: -8px;
+                right: -8px;
+                background: #dc3545;
+                color: white;
+                border-radius: 50%;
+                width: 24px;
+                height: 24px;
+                font-size: 12px;
+                font-weight: bold;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border: 2px solid white;
+            `;
+            toggleBtn.appendChild(badge);
+        }
+        badge.textContent = count > 99 ? '99+' : count;
+        badge.style.display = 'flex';
+    }
+    
+    function hideNotificationBadge() {
+        const badge = toggleBtn.querySelector('.notification-badge');
+        if (badge) {
+            badge.style.display = 'none';
+        }
+    }
+    
+    // Auto-hide badge when chat is opened
+    toggleBtn.addEventListener('click', hideNotificationBadge);
+    
+    // Example: Show notification after page load (optional)
+    setTimeout(() => {
+        if (!isOpen) {
+            // showNotificationBadge();
+        }
+    }, 5000);
+});
+</script>
+
+<style>
+/* Additional inline styles for toggle positioning */
+#chat-widget-toggle {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    z-index: 1001;
+}
+
+/* Ensure proper spacing on mobile */
+@media (max-width: 768px) {
+    #chat-widget-toggle {
+        /* Adjust for mobile keyboards */
+        bottom: env(safe-area-inset-bottom, 0px);
+    }
+}
+
+/* Loading state for chat widget */
+.chat-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    color: #6c757d;
+    font-style: italic;
+}
+
+.chat-loading::after {
+    content: '';
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid #dee2e6;
+    border-radius: 50%;
+    border-top-color: #007bff;
+    animation: spin 1s linear infinite;
+    margin-left: 8px;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Connection status indicator */
+.connection-status {
+    padding: 8px 16px;
+    text-align: center;
+    font-size: 12px;
+    background: #f8f9fa;
+    border-top: 1px solid #e0e0e0;
+}
+
+.connection-status.connected {
+    background: #d4edda;
+    color: #155724;
+}
+
+.connection-status.disconnected {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.connection-status.connecting {
+    background: #fff3cd;
+    color: #856404;
+}
+</style>

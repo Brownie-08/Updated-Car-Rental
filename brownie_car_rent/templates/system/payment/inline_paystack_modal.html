@@ -1,0 +1,261 @@
+{% load static %}
+
+<!-- Paystack Inline Payment Modal -->
+<div class="modal fade" id="paystackPaymentModal" tabindex="-1" role="dialog" aria-labelledby="paystackPaymentModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title" id="paystackPaymentModalLabel">
+                    <i class="fas fa-credit-card"></i> Complete Your Payment
+                </h5>
+                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body p-4">
+                <!-- Loading State -->
+                <div id="payment-loading" class="text-center d-none">
+                    <div class="spinner-border text-success" role="status">
+                        <span class="sr-only">Processing...</span>
+                    </div>
+                    <p class="mt-3">Initializing secure payment...</p>
+                </div>
+
+                <!-- Payment Form -->
+                <div id="payment-form">
+                    <!-- Order Summary -->
+                    <div class="card mb-4" style="border-left: 4px solid #28a745;">
+                        <div class="card-body">
+                            <h6 class="card-title">
+                                <i class="fas fa-car text-success"></i> Booking Summary
+                            </h6>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <small class="text-muted">Order Number</small>
+                                    <div class="font-weight-bold text-success" id="modal-order-number"></div>
+                                </div>
+                                <div class="col-md-6">
+                                    <small class="text-muted">Vehicle</small>
+                                    <div class="font-weight-bold" id="modal-car-name"></div>
+                                </div>
+                            </div>
+                            <div class="row mt-2">
+                                <div class="col-md-6">
+                                    <small class="text-muted">Customer</small>
+                                    <div id="modal-customer-name"></div>
+                                </div>
+                                <div class="col-md-6">
+                                    <small class="text-muted">Rental Period</small>
+                                    <div id="modal-rental-period"></div>
+                                </div>
+                            </div>
+                            <hr class="my-2">
+                            <div class="row">
+                                <div class="col-6">
+                                    <h6 class="mb-0">Total Amount:</h6>
+                                </div>
+                                <div class="col-6 text-right">
+                                    <h6 class="text-success mb-0" id="modal-total-amount"></h6>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Security Notice -->
+                    <div class="alert alert-success alert-sm">
+                        <i class="fas fa-shield-alt"></i>
+                        <strong>Secure Payment:</strong> Your payment information is encrypted and protected by Paystack's industry-standard security.
+                    </div>
+
+                    <!-- Error Display -->
+                    <div id="payment-error" class="alert alert-danger d-none">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span id="payment-error-text"></span>
+                    </div>
+
+                    <!-- Payment Button -->
+                    <button id="modal-pay-button" class="btn btn-success btn-block btn-lg">
+                        <i class="fas fa-credit-card"></i> <span id="modal-pay-text">Pay Now</span>
+                    </button>
+
+                    <!-- Payment Methods Info -->
+                    <div class="text-center mt-3">
+                        <small class="text-muted">
+                            <i class="fas fa-lock"></i>
+                            Secured by Paystack | Supports Visa, Mastercard, Verve, Bank Transfer & USSD
+                        </small>
+                    </div>
+                </div>
+
+                <!-- Success State -->
+                <div id="payment-success" class="text-center d-none">
+                    <div class="text-success mb-3">
+                        <i class="fas fa-check-circle fa-3x"></i>
+                    </div>
+                    <h5 class="text-success">Payment Successful!</h5>
+                    <p class="text-muted">Your booking has been confirmed. Redirecting...</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <small class="text-muted mr-auto">
+                    <i class="fas fa-phone"></i> Need help? Call +234-800-PAYSTACK
+                </small>
+                <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Global variables for payment modal
+let paystackModal = null;
+let currentPaymentData = null;
+
+// Initialize Paystack payment modal
+function initializePaystackModal(paymentData) {
+    currentPaymentData = paymentData;
+    
+    // Populate modal with order details
+    document.getElementById('modal-order-number').textContent = '#' + paymentData.order_number;
+    document.getElementById('modal-car-name').textContent = paymentData.car_name;
+    document.getElementById('modal-customer-name').textContent = paymentData.customer_name;
+    document.getElementById('modal-rental-period').textContent = paymentData.rental_period;
+    document.getElementById('modal-total-amount').textContent = '₦' + parseFloat(paymentData.amount).toLocaleString('en-NG', {minimumFractionDigits: 2});
+    document.getElementById('modal-pay-text').textContent = 'Pay ₦' + parseFloat(paymentData.amount).toLocaleString('en-NG', {minimumFractionDigits: 2});
+    
+    // Show modal
+    paystackModal = new bootstrap.Modal(document.getElementById('paystackPaymentModal'), {
+        backdrop: 'static',
+        keyboard: false
+    });
+    paystackModal.show();
+    
+    // Setup payment button
+    setupPaymentButton();
+}
+
+function setupPaymentButton() {
+    const payButton = document.getElementById('modal-pay-button');
+    const loadingDiv = document.getElementById('payment-loading');
+    const formDiv = document.getElementById('payment-form');
+    const errorDiv = document.getElementById('payment-error');
+    const errorText = document.getElementById('payment-error-text');
+    const successDiv = document.getElementById('payment-success');
+    
+    payButton.onclick = function(e) {
+        e.preventDefault();
+        
+        // Show loading state
+        showPaymentLoading();
+        
+        // Initialize Paystack payment
+        const handler = PaystackPop.setup({
+            key: currentPaymentData.public_key,
+            email: currentPaymentData.email,
+            amount: Math.round(parseFloat(currentPaymentData.amount) * 100), // Convert to kobo
+            currency: 'NGN',
+            ref: currentPaymentData.reference,
+            firstname: currentPaymentData.customer_name.split(' ')[0] || 'Customer',
+            lastname: currentPaymentData.customer_name.split(' ')[1] || '',
+            metadata: {
+                order_id: currentPaymentData.order_id,
+                order_number: currentPaymentData.order_number,
+                car_name: currentPaymentData.car_name,
+                customer_name: currentPaymentData.customer_name,
+                rental_period: currentPaymentData.rental_period,
+                custom_fields: [
+                    {
+                        display_name: "Order Number",
+                        variable_name: "order_number",
+                        value: currentPaymentData.order_number
+                    },
+                    {
+                        display_name: "Vehicle",
+                        variable_name: "car_name",
+                        value: currentPaymentData.car_name
+                    },
+                    {
+                        display_name: "Customer",
+                        variable_name: "customer_name",
+                        value: currentPaymentData.customer_name
+                    }
+                ]
+            },
+            callback: function(response) {
+                // Payment successful
+                showPaymentSuccess();
+                
+                // Verify payment on server
+                fetch(currentPaymentData.callback_url + '?reference=' + response.reference, {
+                    method: 'GET',
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken'),
+                        'Content-Type': 'application/json',
+                    },
+                })
+                .then(response => {
+                    if (response.ok) {
+                        setTimeout(() => {
+                            window.location.href = currentPaymentData.success_url;
+                        }, 2000);
+                    } else {
+                        throw new Error('Verification failed');
+                    }
+                })
+                .catch(error => {
+                    console.error('Payment verification error:', error);
+                    showPaymentError('Payment completed but verification failed. Please contact support with reference: ' + response.reference);
+                });
+            },
+            onClose: function() {
+                hidePaymentLoading();
+                // Optional: show message that payment was cancelled
+            }
+        });
+        
+        // Open Paystack popup
+        handler.openIframe();
+    };
+    
+    function showPaymentLoading() {
+        loadingDiv.classList.remove('d-none');
+        formDiv.classList.add('d-none');
+        errorDiv.classList.add('d-none');
+        successDiv.classList.add('d-none');
+    }
+    
+    function hidePaymentLoading() {
+        loadingDiv.classList.add('d-none');
+        formDiv.classList.remove('d-none');
+    }
+    
+    function showPaymentError(message) {
+        hidePaymentLoading();
+        errorText.textContent = message;
+        errorDiv.classList.remove('d-none');
+    }
+    
+    function showPaymentSuccess() {
+        loadingDiv.classList.add('d-none');
+        formDiv.classList.add('d-none');
+        errorDiv.classList.add('d-none');
+        successDiv.classList.remove('d-none');
+    }
+}
+
+// Helper function to get CSRF token
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>

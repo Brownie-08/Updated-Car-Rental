@@ -1,0 +1,187 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Payment Cancelled - Brownie Car Rental{% endblock %}
+
+{% block extra_css %}
+<style>
+    .cancelled-container {
+        max-width: 600px;
+        margin: 2rem auto;
+        padding: 2rem;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        text-align: center;
+    }
+    .cancelled-header {
+        color: #dc3545;
+        margin-bottom: 2rem;
+    }
+    .cancelled-icon {
+        font-size: 4rem;
+        color: #dc3545;
+        margin-bottom: 1rem;
+    }
+    .order-info {
+        background: #f8f9fa;
+        padding: 1.5rem;
+        border-radius: 8px;
+        margin: 2rem 0;
+        border-left: 4px solid #ffc107;
+        text-align: left;
+    }
+    .btn-primary-custom {
+        background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+        border: none;
+        padding: 12px 30px;
+        border-radius: 25px;
+        color: white;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-block;
+        margin: 0.5rem;
+        transition: all 0.3s ease;
+    }
+    .btn-primary-custom:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 123, 255, 0.3);
+        color: white;
+        text-decoration: none;
+    }
+    .btn-outline-custom {
+        border: 2px solid #6c757d;
+        color: #6c757d;
+        background: transparent;
+        padding: 12px 30px;
+        border-radius: 25px;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-block;
+        margin: 0.5rem;
+        transition: all 0.3s ease;
+    }
+    .btn-outline-custom:hover {
+        background: #6c757d;
+        color: white;
+        text-decoration: none;
+        transform: translateY(-2px);
+    }
+    .help-info {
+        background: #fff3cd;
+        padding: 1.5rem;
+        border-radius: 8px;
+        margin: 2rem 0;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <div class="cancelled-container">
+        <div class="cancelled-header">
+            <div class="cancelled-icon">
+                <i class="fas fa-times-circle"></i>
+            </div>
+            <h1>Payment Cancelled</h1>
+            <p class="lead">Your payment was not completed</p>
+        </div>
+
+        <div class="alert alert-warning" role="alert">
+            <i class="fas fa-exclamation-triangle"></i>
+            <strong>No charges were made</strong> - Your payment was safely cancelled and no money was deducted from your account.
+        </div>
+
+        {% if order %}
+        <div class="order-info">
+            <h5><i class="fas fa-info-circle text-warning"></i> Booking Information</h5>
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <strong>Order Number:</strong><br>
+                    <span class="h6">#{{ order.order_number }}</span>
+                </div>
+                <div class="col-md-6">
+                    <strong>Vehicle:</strong><br>
+                    {{ order.car_name }}
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <strong>Customer:</strong><br>
+                    {{ order.dealer_name }}
+                </div>
+                <div class="col-md-6">
+                    <strong>Total Amount:</strong><br>
+                    <span class="h6">₦{{ order.total_amount }}</span>
+                </div>
+            </div>
+            <div class="mt-3">
+                <small class="text-muted">
+                    <i class="fas fa-clock"></i> 
+                    This booking reservation will be held for 24 hours while you complete your payment.
+                </small>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="help-info">
+            <h6><i class="fas fa-question-circle"></i> Why was my payment cancelled?</h6>
+            <ul class="text-left">
+                <li>You chose to cancel the payment process</li>
+                <li>Your session may have timed out</li>
+                <li>There might have been a connection issue</li>
+                <li>Payment was declined by your bank</li>
+            </ul>
+        </div>
+
+        <div class="mt-4">
+            <h5>What would you like to do?</h5>
+            
+            {% if order %}
+            <div class="mb-3">
+                <a href="{% url 'system:initiate_payment' order.id %}" class="btn-primary-custom">
+                    <i class="fas fa-credit-card"></i> Try Payment Again
+                </a>
+            </div>
+            
+            <div class="mb-3">
+                <a href="{% url 'system:order_detail' order.id %}" class="btn-outline-custom">
+                    <i class="fas fa-eye"></i> View Booking Details
+                </a>
+            </div>
+            {% endif %}
+            
+            <div class="mb-3">
+                <a href="{% url 'system:home' %}" class="btn-outline-custom">
+                    <i class="fas fa-home"></i> Back to Home
+                </a>
+                
+                <a href="{% url 'system:booking' %}" class="btn-outline-custom">
+                    <i class="fas fa-car"></i> Browse Cars
+                </a>
+            </div>
+        </div>
+
+        <div class="mt-5">
+            <div class="help-info">
+                <h6><i class="fas fa-headset"></i> Need Help?</h6>
+                <p>
+                    If you're having trouble with payment or have questions about your booking:
+                </p>
+                <p>
+                    <i class="fas fa-phone"></i> <strong>Phone:</strong> +1 (555) 123-4567<br>
+                    <i class="fas fa-envelope"></i> <strong>Email:</strong> support@browniecarrental.com<br>
+                    <i class="fas fa-clock"></i> <strong>Hours:</strong> 24/7 Customer Support
+                </p>
+            </div>
+        </div>
+
+        <div class="mt-4">
+            <p class="text-muted">
+                <i class="fas fa-shield-alt"></i>
+                <strong>Secure & Safe:</strong> All transactions are protected with industry-standard encryption
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

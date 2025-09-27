@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Confirmation - {{ order.order_number }}</title>
+    <style>
+        /* Reset styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f8fafc;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="1" fill="%23ffffff" opacity="0.1"/></pattern></defs><rect width="100%" height="100%" fill="url(%23grain)"/></svg>') repeat;
+        }
+        
+        .logo {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .header-subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+            margin: 0;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .content {
+            padding: 40px 30px;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            background: #10b981;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .order-number {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 30px;
+            text-align: center;
+            padding: 20px;
+            background: #f3f4f6;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .booking-details {
+            background: #f8fafc;
+            padding: 30px;
+            border-radius: 12px;
+            margin: 30px 0;
+            border: 1px solid #e5e7eb;
+        }
+        
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+        
+        .detail-label {
+            font-weight: 600;
+            color: #4b5563;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .detail-value {
+            color: #1f2937;
+            font-weight: 500;
+        }
+        
+        .car-highlight {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .car-name {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .car-company {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .billing-section {
+            background: #f9fafb;
+            padding: 25px;
+            border-radius: 12px;
+            margin: 25px 0;
+            border: 2px solid #e5e7eb;
+        }
+        
+        .billing-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .billing-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            color: #4b5563;
+        }
+        
+        .billing-total {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 0;
+            border-top: 2px solid #e5e7eb;
+            margin-top: 10px;
+            font-size: 18px;
+            font-weight: 700;
+            color: #1f2937;
+        }
+        
+        .important-info {
+            background: #eff6ff;
+            border: 1px solid #3b82f6;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 25px 0;
+        }
+        
+        .important-info h3 {
+            color: #1e40af;
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+        
+        .important-info ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        
+        .important-info li {
+            margin-bottom: 8px;
+            color: #1e40af;
+        }
+        
+        .contact-section {
+            background: #f3f4f6;
+            padding: 25px;
+            border-radius: 12px;
+            margin: 25px 0;
+            text-align: center;
+        }
+        
+        .contact-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 15px;
+        }
+        
+        .contact-info {
+            color: #4b5563;
+            line-height: 1.8;
+        }
+        
+        .footer {
+            background: #1f2937;
+            color: #9ca3af;
+            padding: 30px;
+            text-align: center;
+            font-size: 14px;
+        }
+        
+        .footer-logo {
+            font-size: 20px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 10px;
+        }
+        
+        .icon {
+            width: 16px;
+            height: 16px;
+            display: inline-block;
+            margin-right: 6px;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                margin: 0;
+                border-radius: 0;
+            }
+            
+            .header, .content, .footer {
+                padding: 20px;
+            }
+            
+            .booking-details {
+                padding: 20px;
+            }
+            
+            .detail-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+            
+            .billing-row, .billing-total {
+                flex-direction: column;
+                gap: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">🚗 Brownie Car Rental</div>
+            <div class="header-subtitle">Your Premium Car Rental Service</div>
+        </div>
+        
+        <!-- Content -->
+        <div class="content">
+            <div class="status-badge">✓ Booking Confirmed</div>
+            
+            <h1 style="color: #1f2937; margin-bottom: 10px;">Thank you for your booking!</h1>
+            <p style="color: #6b7280; margin-bottom: 30px;">Your car rental reservation has been confirmed. Here are your booking details:</p>
+            
+            <div class="order-number">
+                Order #{{ order.order_number }}
+            </div>
+            
+            <!-- Car Information -->
+            <div class="car-highlight">
+                <div class="car-name">{{ order.car_name }}</div>
+                <div class="car-company">{{ selected_car.company_name|default:"Premium Vehicle" }}</div>
+            </div>
+            
+            <!-- Booking Details -->
+            <div class="booking-details">
+                <div class="detail-row">
+                    <div class="detail-label">
+                        <span>👤</span> Customer Name:
+                    </div>
+                    <div class="detail-value">{{ order.dealer_name }}</div>
+                </div>
+                
+                <div class="detail-row">
+                    <div class="detail-label">
+                        <span>📞</span> Phone Number:
+                    </div>
+                    <div class="detail-value">{{ order.cell_no }}</div>
+                </div>
+                
+                <div class="detail-row">
+                    <div class="detail-label">
+                        <span>📍</span> Address:
+                    </div>
+                    <div class="detail-value">{{ order.address }}</div>
+                </div>
+                
+                <div class="detail-row">
+                    <div class="detail-label">
+                        <span>📅</span> Rental Period:
+                    </div>
+                    <div class="detail-value">{{ order.date_from|date:"M d, Y" }} - {{ order.date_to|date:"M d, Y" }}</div>
+                </div>
+                
+                <div class="detail-row">
+                    <div class="detail-label">
+                        <span>⏰</span> Duration:
+                    </div>
+                    <div class="detail-value">{{ order.get_rental_duration_display }}</div>
+                </div>
+                
+                <div class="detail-row">
+                    <div class="detail-label">
+                        <span>📊</span> Status:
+                    </div>
+                    <div class="detail-value">{{ order.get_status_display }}</div>
+                </div>
+            </div>
+            
+            <!-- Billing Information -->
+            <div class="billing-section">
+                <div class="billing-title">
+                    <span>💰</span> Billing Summary
+                </div>
+                
+                <div class="billing-row">
+                    <span>Daily Rate</span>
+                    <span>${{ order.daily_rate }}</span>
+                </div>
+                
+                <div class="billing-row">
+                    <span>Rental Days</span>
+                    <span>{{ order.rental_days }} day{{ order.rental_days|pluralize }}</span>
+                </div>
+                
+                <div class="billing-row">
+                    <span>Subtotal</span>
+                    <span>${{ order.subtotal }}</span>
+                </div>
+                
+                <div class="billing-row">
+                    <span>Tax ({{ order.tax_rate }}%)</span>
+                    <span>${{ order.tax_amount }}</span>
+                </div>
+                
+                <div class="billing-total">
+                    <span>Total Amount</span>
+                    <span>${{ order.total_amount }}</span>
+                </div>
+            </div>
+            
+            <!-- Important Information -->
+            <div class="important-info">
+                <h3>📋 Important Information</h3>
+                <ul>
+                    <li>Please bring a valid driver's license for vehicle pickup</li>
+                    <li>Payment can be made at pickup or delivery</li>
+                    <li>Free cancellation up to 24 hours before rental</li>
+                    <li>Vehicle inspection will be conducted at pickup and return</li>
+                    <li>Late return charges may apply after grace period</li>
+                </ul>
+            </div>
+            
+            <!-- Contact Information -->
+            <div class="contact-section">
+                <div class="contact-title">Need Help?</div>
+                <div class="contact-info">
+                    <strong>24/7 Customer Support</strong><br>
+                    📞 Phone: +1 (555) 123-4567<br>
+                    📧 Email: support@browniecarrental.com<br>
+                    💬 Live Chat: Available on our website
+                </div>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <div class="footer">
+            <div class="footer-logo">Brownie Car Rental</div>
+            <p>Thank you for choosing Brownie Car Rental. We look forward to serving you!</p>
+            <p style="margin-top: 20px; font-size: 12px; opacity: 0.7;">
+                This is an automated message. Please do not reply to this email.<br>
+                © 2024 Brownie Car Rental. All rights reserved.
+            </p>
+        </div>
+    </div>
+</body>
+</html>

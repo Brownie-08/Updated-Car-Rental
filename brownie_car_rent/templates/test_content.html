@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Content Test</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 20px; 
+            background: #f5f5f5;
+        }
+        .test-section { 
+            background: white; 
+            padding: 20px; 
+            margin: 20px 0; 
+            border: 1px solid #ddd; 
+            border-radius: 5px;
+        }
+        .car-item { 
+            border: 1px solid #ccc; 
+            padding: 15px; 
+            margin: 10px 0; 
+            background: #fafafa;
+        }
+        .error { color: red; }
+        .success { color: green; }
+        .warning { color: orange; }
+    </style>
+</head>
+<body>
+    <h1>🔧 Content Rendering Test</h1>
+    
+    <div class="test-section">
+        <h2>📊 Context Data Test</h2>
+        <p><strong>Car count:</strong> {{ car.paginator.count|default:"No count available" }}</p>
+        <p><strong>Car object:</strong> {{ car|default:"No car data" }}</p>
+        <p><strong>Title:</strong> {{ title|default:"No title" }}</p>
+    </div>
+    
+    <div class="test-section">
+        <h2>🚗 Car List Test</h2>
+        {% if car %}
+            <p class="success">✅ Car data found! Count: {{ car|length }}</p>
+            {% for ob in car %}
+                <div class="car-item">
+                    <strong>{{ ob.car_name }}</strong> by {{ ob.company_name }}<br>
+                    Price: ${{ ob.cost_par_day }}/day | Seats: {{ ob.num_of_seats }} | Likes: {{ ob.like }}<br>
+                    {% if ob.image %}
+                        <small>Image: {{ ob.image.url }}</small>
+                    {% else %}
+                        <small>No image</small>
+                    {% endif %}
+                </div>
+            {% empty %}
+                <p class="warning">⚠️ Car queryset is empty</p>
+            {% endfor %}
+        {% else %}
+            <p class="error">❌ No car data in context</p>
+        {% endif %}
+    </div>
+    
+    <div class="test-section">
+        <h2>📝 Form Test</h2>
+        {% if form %}
+            <p class="success">✅ Form found in context</p>
+            <form>
+                {{ form.as_p }}
+            </form>
+        {% else %}
+            <p class="error">❌ No form in context</p>
+        {% endif %}
+    </div>
+    
+    <div class="test-section">
+        <h2>🎨 Template Debug</h2>
+        <p><strong>Template name:</strong> test_content.html</p>
+        <p><strong>Request method:</strong> {{ request.method }}</p>
+        <p><strong>User:</strong> {{ request.user }}</p>
+        <p><strong>All context keys:</strong></p>
+        <ul>
+        {% for key, value in view.get_context_data.items %}
+            <li><strong>{{ key }}:</strong> {{ value|truncatechars:50 }}</li>
+        {% empty %}
+            <li>No context data available</li>
+        {% endfor %}
+        </ul>
+    </div>
+</body>
+</html>

@@ -1,0 +1,682 @@
+/**
+ * AI Chat Widget Styles for Car Rental System
+ * Modern, responsive chat interface with Bootstrap compatibility
+ */
+
+/* ========================================
+   CHAT WIDGET TOGGLE BUTTON
+======================================== */
+.chat-toggle-btn {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    border-radius: 50%;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    transition: all 0.3s ease;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.chat-toggle-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(102, 126, 234, 0.6);
+}
+
+.chat-toggle-btn:active {
+    transform: translateY(0);
+}
+
+.chat-toggle-btn.active {
+    background: #dc3545;
+}
+
+/* ========================================
+   CHAT WIDGET MODAL/CONTAINER
+======================================== */
+.chat-widget-modal {
+    position: fixed;
+    bottom: 100px;
+    right: 30px;
+    width: 400px;
+    max-height: 600px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    z-index: 999;
+    display: none;
+    overflow: hidden;
+    border: 1px solid #e0e0e0;
+}
+
+.chat-widget-modal.active {
+    display: flex;
+    flex-direction: column;
+}
+
+/* ========================================
+   CHAT HEADER
+======================================== */
+.chat-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-radius: 16px 16px 0 0;
+}
+
+.chat-header h5 {
+    margin: 0;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.chat-header .status-indicator {
+    width: 8px;
+    height: 8px;
+    background: #4caf50;
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+}
+
+.chat-minimize-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 18px;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+.chat-minimize-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* ========================================
+   CHAT MESSAGES AREA
+======================================== */
+.chat-messages {
+    flex: 1;
+    padding: 16px;
+    overflow-y: auto;
+    max-height: 400px;
+    background: #f8f9fa;
+    scrollbar-width: thin;
+    scrollbar-color: #ccc transparent;
+}
+
+.chat-messages::-webkit-scrollbar {
+    width: 6px;
+}
+
+.chat-messages::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.chat-messages::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 3px;
+}
+
+/* ========================================
+   MESSAGE BUBBLES
+======================================== */
+.message {
+    margin-bottom: 16px;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    max-width: 100%;
+}
+
+.message.user {
+    flex-direction: row-reverse;
+}
+
+.message-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 600;
+    flex-shrink: 0;
+}
+
+.message.user .message-avatar {
+    background: #007bff;
+    color: white;
+}
+
+.message.bot .message-avatar {
+    background: #6c757d;
+    color: white;
+}
+
+.message.system .message-avatar {
+    background: #ffc107;
+    color: #333;
+}
+
+.message-bubble {
+    max-width: 75%;
+    padding: 12px 16px;
+    border-radius: 18px;
+    word-wrap: break-word;
+    line-height: 1.4;
+    position: relative;
+}
+
+.message.user .message-bubble {
+    background: #007bff;
+    color: white;
+    border-bottom-right-radius: 4px;
+}
+
+.message.bot .message-bubble {
+    background: white;
+    border: 1px solid #e0e0e0;
+    color: #333;
+    border-bottom-left-radius: 4px;
+}
+
+.message.system .message-bubble {
+    background: #fff3cd;
+    border: 1px solid #ffeaa7;
+    color: #856404;
+    font-style: italic;
+    text-align: center;
+    max-width: 90%;
+}
+
+/* ========================================
+   QUICK REPLIES
+======================================== */
+.quick-replies-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 12px;
+}
+
+.quick-reply-btn {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    color: #495057;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.quick-reply-btn:hover {
+    background: #007bff;
+    color: white;
+    border-color: #007bff;
+}
+
+/* ========================================
+   CAR CARDS
+======================================== */
+.car-cards-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 12px;
+}
+
+.car-card {
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease;
+}
+
+.car-card:hover {
+    transform: translateY(-2px);
+}
+
+.car-card-image {
+    width: 100%;
+    height: 120px;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 12px;
+    background: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.car-card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.car-placeholder {
+    font-size: 48px;
+    color: #6c757d;
+}
+
+.car-name {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0 0 4px 0;
+    color: #333;
+}
+
+.car-category {
+    font-size: 13px;
+    color: #6c757d;
+    margin: 0 0 8px 0;
+}
+
+.car-price {
+    font-size: 15px;
+    font-weight: 600;
+    color: #007bff;
+    margin: 0 0 12px 0;
+}
+
+.car-features {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-bottom: 12px;
+}
+
+.feature-tag {
+    background: #e9ecef;
+    color: #495057;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.car-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.car-select-btn {
+    flex: 1;
+}
+
+/* ========================================
+   BOOKING PREVIEW
+======================================== */
+.booking-preview {
+    background: white;
+    border: 2px solid #007bff;
+    border-radius: 12px;
+    margin-top: 12px;
+    overflow: hidden;
+}
+
+.booking-preview-header {
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+    color: white;
+    padding: 12px 16px;
+    margin: 0;
+}
+
+.booking-preview-header h5 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.booking-preview-content {
+    padding: 16px;
+}
+
+.booking-section {
+    margin-bottom: 16px;
+}
+
+.booking-section:last-child {
+    margin-bottom: 0;
+}
+
+.booking-section h6 {
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+    margin: 0 0 8px 0;
+    border-bottom: 1px solid #e0e0e0;
+    padding-bottom: 4px;
+}
+
+.booking-section p {
+    margin: 0 0 4px 0;
+    font-size: 13px;
+    color: #666;
+}
+
+.pricing-breakdown {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 12px;
+}
+
+.pricing-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+    font-size: 13px;
+}
+
+.pricing-row:last-child {
+    margin-bottom: 0;
+}
+
+.pricing-row.total {
+    border-top: 1px solid #dee2e6;
+    padding-top: 8px;
+    margin-top: 8px;
+    font-size: 14px;
+}
+
+.booking-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
+}
+
+.booking-action-btn {
+    flex: 1;
+}
+
+/* ========================================
+   PAYMENT LINK
+======================================== */
+.payment-link-container {
+    margin-top: 12px;
+}
+
+.payment-notice {
+    background: #d4edda;
+    border: 1px solid #c3e6cb;
+    border-radius: 8px;
+    padding: 16px;
+    text-align: center;
+}
+
+.payment-notice h6 {
+    margin: 0 0 8px 0;
+    font-size: 16px;
+    color: #155724;
+}
+
+.payment-notice p {
+    margin: 0 0 12px 0;
+    font-size: 13px;
+    color: #155724;
+}
+
+/* ========================================
+   CHAT INPUT
+======================================== */
+.chat-input {
+    padding: 16px;
+    border-top: 1px solid #e0e0e0;
+    background: white;
+    border-radius: 0 0 16px 16px;
+}
+
+.chat-input-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.chat-input input {
+    flex: 1;
+    border: 1px solid #dee2e6;
+    border-radius: 24px;
+    padding: 10px 16px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+.chat-input input:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.chat-input button {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: none;
+    background: #007bff;
+    color: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.chat-input button:hover:not(:disabled) {
+    background: #0056b3;
+    transform: scale(1.05);
+}
+
+.chat-input button:disabled {
+    background: #6c757d;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* ========================================
+   TYPING INDICATOR
+======================================== */
+.typing-indicator {
+    padding: 8px 16px;
+    font-style: italic;
+    color: #6c757d;
+    font-size: 13px;
+    display: none;
+}
+
+.typing-indicator::after {
+    content: '';
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #6c757d;
+    margin-left: 4px;
+    animation: typing-dot 1.5s infinite;
+}
+
+/* ========================================
+   ERROR MESSAGES
+======================================== */
+.error-message {
+    margin: 12px 0;
+    padding: 12px;
+    background: #f8d7da;
+    border: 1px solid #f5c6cb;
+    border-radius: 8px;
+    color: #721c24;
+    font-size: 13px;
+}
+
+/* ========================================
+   ANIMATIONS
+======================================== */
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+@keyframes typing-dot {
+    0%, 60%, 100% { transform: translateY(0); }
+    30% { transform: translateY(-10px); }
+}
+
+/* ========================================
+   RESPONSIVE DESIGN
+======================================== */
+@media (max-width: 768px) {
+    .chat-widget-modal {
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        max-height: 100vh;
+        border-radius: 0;
+    }
+    
+    .chat-header {
+        border-radius: 0;
+    }
+    
+    .chat-input {
+        border-radius: 0;
+    }
+    
+    .chat-toggle-btn {
+        bottom: 20px;
+        right: 20px;
+        width: 56px;
+        height: 56px;
+        font-size: 20px;
+    }
+    
+    .message-bubble {
+        max-width: 85%;
+    }
+    
+    .car-card {
+        padding: 12px;
+    }
+    
+    .car-card-image {
+        height: 100px;
+    }
+}
+
+@media (max-width: 480px) {
+    .chat-input-group {
+        gap: 6px;
+    }
+    
+    .chat-input input {
+        padding: 8px 12px;
+        font-size: 13px;
+    }
+    
+    .chat-input button {
+        width: 36px;
+        height: 36px;
+        font-size: 16px;
+    }
+    
+    .quick-reply-btn {
+        font-size: 12px;
+        padding: 4px 8px;
+    }
+}
+
+/* ========================================
+   ACCESSIBILITY
+======================================== */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+.chat-input input:focus,
+.quick-reply-btn:focus,
+.car-select-btn:focus,
+.booking-action-btn:focus {
+    outline: 2px solid #007bff;
+    outline-offset: 2px;
+}
+
+/* ========================================
+   DARK MODE SUPPORT
+======================================== */
+@media (prefers-color-scheme: dark) {
+    .chat-widget-modal {
+        background: #2d3748;
+        border-color: #4a5568;
+    }
+    
+    .chat-messages {
+        background: #1a202c;
+    }
+    
+    .message.bot .message-bubble {
+        background: #2d3748;
+        border-color: #4a5568;
+        color: #e2e8f0;
+    }
+    
+    .car-card {
+        background: #2d3748;
+        border-color: #4a5568;
+        color: #e2e8f0;
+    }
+    
+    .car-name {
+        color: #e2e8f0;
+    }
+    
+    .booking-preview {
+        border-color: #4299e1;
+    }
+    
+    .booking-preview-content {
+        background: #2d3748;
+        color: #e2e8f0;
+    }
+    
+    .pricing-breakdown {
+        background: #1a202c;
+    }
+    
+    .chat-input {
+        background: #2d3748;
+        border-color: #4a5568;
+    }
+    
+    .chat-input input {
+        background: #1a202c;
+        border-color: #4a5568;
+        color: #e2e8f0;
+    }
+}

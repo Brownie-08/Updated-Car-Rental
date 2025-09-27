@@ -1,0 +1,50 @@
+🚗 BROWNIE CAR RENTAL - BOOKING CONFIRMATION
+=============================================
+
+Dear {{ order.dealer_name }},
+
+Thank you for your booking! Your car rental reservation has been confirmed.
+
+ORDER DETAILS:
+Order Number: {{ order.order_number }}
+Status: {{ order.get_status_display }}
+Booking Date: {{ order.created_at|date:"M d, Y" }}
+
+VEHICLE INFORMATION:
+Car: {{ order.car_name }}
+Company: {{ selected_car.company_name|default:"Premium Vehicle" }}
+
+CUSTOMER INFORMATION:
+Customer Name: {{ order.dealer_name }}
+Phone Number: {{ order.cell_no }}
+Address: {{ order.address }}
+
+RENTAL DETAILS:
+Rental Period: {{ order.date_from|date:"M d, Y" }} - {{ order.date_to|date:"M d, Y" }}
+Duration: {{ order.get_rental_duration_display }}
+
+BILLING SUMMARY:
+Daily Rate: ${{ order.daily_rate }}
+Rental Days: {{ order.rental_days }} day{{ order.rental_days|pluralize }}
+Subtotal: ${{ order.subtotal }}
+Tax ({{ order.tax_rate }}%): ${{ order.tax_amount }}
+Total Amount: ${{ order.total_amount }}
+
+IMPORTANT INFORMATION:
+• Please bring a valid driver's license for vehicle pickup
+• Payment can be made at pickup or delivery
+• Free cancellation up to 24 hours before rental
+• Vehicle inspection will be conducted at pickup and return
+• Late return charges may apply after grace period
+
+NEED HELP?
+24/7 Customer Support
+Phone: +1 (555) 123-4567
+Email: support@browniecarrental.com
+Live Chat: Available on our website
+
+Thank you for choosing Brownie Car Rental. We look forward to serving you!
+
+---
+This is an automated message. Please do not reply to this email.
+© 2024 Brownie Car Rental. All rights reserved.

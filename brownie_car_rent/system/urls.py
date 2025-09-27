@@ -1,12 +1,17 @@
-from django.urls import path
+from django.urls import path, include
 from django.contrib import admin
 from .import views
+from . import chat_views
+
+app_name = 'system'
 
 urlpatterns = [
     path('', views.home, name='home'),
 
     path('carlist/', views.car_list, name="car_list"),
-    path('createOrder/', views.order_created, name="order_create"),
+    path('createOrder/', views.order_created, name="order_created"),
+    path('createOrder/', views.order_created, name="order_create"),  # Alias for template compatibility
+    path('createOrder/<int:car_id>/', views.order_created, name="order_create_with_car"),
 
     path('<int:id>/edit/', views.car_update, name="car_edit"),
 
@@ -21,6 +26,18 @@ urlpatterns = [
 
     path('newcar/', views.newcar, name="newcar"),
     path('<int:id>/like/', views.like_update, name="like"),
-    path('popularcar/', views.popular_car, name="popularcar"),
     
+    path('popularcar/', views.popular_car, name="popularcar"),
+    path('about/', views.about, name="about"),
+    path('services/', views.services, name="services"),
+    path('reviews/', views.reviews, name="reviews"),
+    path('booking/', views.booking, name="booking"),
+    path('debug/', views.debug_info, name='debug_info'),
+    path('test-car-list/', views.test_car_list, name='test_car_list'),
+    path('test-booking/', views.test_booking, name='test_booking'),
+    
+    # Payment URLs
+    path('payment/', include('system.payment_urls')),
+    
+    # Chat URLs - moved to separate chat_urls.py to avoid conflicts
 ]

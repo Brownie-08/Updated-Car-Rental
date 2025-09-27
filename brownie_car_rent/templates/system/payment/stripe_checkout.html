@@ -1,0 +1,330 @@
+{% extends 'base.html' %}
+
+{% block title %}Payment - Stripe Checkout{% endblock %}
+
+{% block body %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="payment-container">
+                <div class="payment-header text-center mb-4">
+                    <div class="payment-icon">
+                        <i class="fas fa-credit-card"></i>
+                    </div>
+                    <h2 class="payment-title">Complete Your Payment</h2>
+                    <p class="payment-subtitle">Secure checkout powered by Stripe</p>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="booking-summary-card">
+                            <h5 class="card-title">
+                                <i class="fas fa-receipt me-2"></i>Booking Summary
+                            </h5>
+                            
+                            <div class="booking-details">
+                                <div class="detail-row">
+                                    <span class="label">Car:</span>
+                                    <span class="value">{{ order.car_name }}</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="label">Customer:</span>
+                                    <span class="value">{{ order.dealer_name }}</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="label">Rental Period:</span>
+                                    <span class="value">{{ order.date_from|date:"M d, Y" }} - {{ order.date_to|date:"M d, Y" }}</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="label">Duration:</span>
+                                    <span class="value">{{ order.rental_days }} day{{ order.rental_days|pluralize }}</span>
+                                </div>
+                                <div class="detail-row total-row">
+                                    <span class="label">Total Amount:</span>
+                                    <span class="value">${{ order.total_amount }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="payment-form-card">
+                            <h5 class="card-title">
+                                <i class="fas fa-credit-card me-2"></i>Payment Information
+                            </h5>
+                            
+                            <form id="payment-form">
+                                <div id="payment-element">
+                                    <!-- Stripe Elements will create form elements here -->
+                                </div>
+                                
+                                <div class="payment-buttons mt-4">
+                                    <button id="submit-payment" class="btn btn-primary btn-lg w-100">
+                                        <i class="fas fa-lock me-2"></i>
+                                        <span id="button-text">Pay ${{ order.total_amount }}</span>
+                                        <div id="spinner" class="spinner-border spinner-border-sm ms-2 d-none" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                    </button>
+                                    
+                                    <a href="{{ order.get_absolute_url }}" class="btn btn-outline-secondary btn-lg w-100 mt-2">
+                                        <i class="fas fa-arrow-left me-2"></i>Back to Booking
+                                    </a>
+                                </div>
+                            </form>
+                            
+                            <div class="security-note mt-3">
+                                <i class="fas fa-shield-alt text-success me-2"></i>
+                                <small class="text-muted">Your payment information is secure and encrypted</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Payment success modal -->
+<div class="modal fade" id="paymentSuccessModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-body text-center p-4">
+                <div class="success-icon mb-3">
+                    <i class="fas fa-check-circle text-success" style="font-size: 4rem;"></i>
+                </div>
+                <h4>Payment Successful!</h4>
+                <p class="mb-3">Your booking has been confirmed. You will receive a confirmation email shortly.</p>
+                <button type="button" class="btn btn-success" onclick="window.location.href='/orders/'">
+                    View My Bookings
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+const stripe = Stripe('{{ stripe_publishable_key }}');
+const clientSecret = '{{ client_secret|escapejs }}';
+const elements = stripe.elements({ clientSecret: clientSecret });
+
+// Create payment element
+const paymentElement = elements.create('payment');
+paymentElement.mount('#payment-element');
+
+// Handle form submission
+const form = document.getElementById('payment-form');
+const submitButton = document.getElementById('submit-payment');
+const spinner = document.getElementById('spinner');
+const buttonText = document.getElementById('button-text');
+
+form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    
+    // Disable submit button and show spinner
+    submitButton.disabled = true;
+    spinner.classList.remove('d-none');
+    buttonText.textContent = 'Processing...';
+    
+    try {
+        const {error, paymentIntent} = await stripe.confirmPayment({
+            elements,
+            confirmParams: {
+                return_url: window.location.origin + '/payment/success/{{ order.id }}/',
+            },
+            redirect: 'if_required'
+        });
+        
+        if (error) {
+            // Show error to your customer
+            showError(error.message);
+        } else if (paymentIntent.status === 'succeeded') {
+            // Payment succeeded, confirm with backend
+            await confirmPaymentWithBackend(paymentIntent.id);
+        }
+    } catch (err) {
+        showError('An unexpected error occurred.');
+        console.error('Payment error:', err);
+    } finally {
+        // Re-enable submit button
+        submitButton.disabled = false;
+        spinner.classList.add('d-none');
+        buttonText.textContent = 'Pay ${{ order.total_amount }}';
+    }
+});
+
+async function confirmPaymentWithBackend(paymentIntentId) {
+    try {
+        const response = await fetch('/payment/confirm-stripe/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            },
+            body: JSON.stringify({
+                payment_intent_id: paymentIntentId
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            // Show success modal and redirect
+            $('#paymentSuccessModal').modal('show');
+            setTimeout(() => {
+                window.location.href = data.redirect_url;
+            }, 2000);
+        } else {
+            showError(data.error || 'Payment confirmation failed');
+        }
+    } catch (err) {
+        showError('Failed to confirm payment. Please contact support.');
+        console.error('Backend confirmation error:', err);
+    }
+}
+
+function showError(message) {
+    // Create and show error alert
+    const alertDiv = document.createElement('div');
+    alertDiv.className = 'alert alert-danger alert-dismissible fade show mt-3';
+    alertDiv.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    const form = document.getElementById('payment-form');
+    form.insertBefore(alertDiv, form.firstChild);
+    
+    // Auto-dismiss after 5 seconds
+    setTimeout(() => {
+        if (alertDiv.parentNode) {
+            alertDiv.remove();
+        }
+    }, 5000);
+}
+
+// Add CSRF token to the page
+if (!document.querySelector('[name=csrfmiddlewaretoken]')) {
+    const csrfToken = document.createElement('input');
+    csrfToken.type = 'hidden';
+    csrfToken.name = 'csrfmiddlewaretoken';
+    csrfToken.value = '{{ csrf_token }}';
+    document.body.appendChild(csrfToken);
+}
+</script>
+
+<style>
+.payment-container {
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+    margin-top: 2rem;
+}
+
+.payment-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+}
+
+.payment-icon i {
+    font-size: 2rem;
+    color: #fff;
+}
+
+.payment-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 0.5rem;
+}
+
+.payment-subtitle {
+    color: #6b7280;
+    margin-bottom: 0;
+}
+
+.booking-summary-card,
+.payment-form-card {
+    background: #f8fafc;
+    border-radius: 15px;
+    padding: 1.5rem;
+    height: 100%;
+    border: 2px solid #e5e7eb;
+}
+
+.card-title {
+    color: #374151;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    border-bottom: 2px solid #e5e7eb;
+    padding-bottom: 0.5rem;
+}
+
+.booking-details {
+    margin-top: 1rem;
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.detail-row:last-child {
+    border-bottom: none;
+}
+
+.detail-row.total-row {
+    border-top: 2px solid #667eea;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.label {
+    color: #6b7280;
+}
+
+.value {
+    color: #1f2937;
+    font-weight: 500;
+}
+
+.total-row .value {
+    color: #667eea;
+    font-size: 1.2rem;
+}
+
+#payment-element {
+    margin-bottom: 1rem;
+}
+
+.security-note {
+    text-align: center;
+    padding: 1rem;
+    background: #f0f9ff;
+    border-radius: 8px;
+}
+
+.success-icon {
+    animation: successPulse 0.6s ease-in-out;
+}
+
+@keyframes successPulse {
+    0% { transform: scale(0.8); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+</style>
+{% endblock %}

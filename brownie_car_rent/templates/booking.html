@@ -1,0 +1,667 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Book Your Ride - {{ block.super }}{% endblock %}
+
+{% block body %}
+<!-- Booking Hero Section -->
+<section class="booking-hero py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10 text-center" data-aos="fade-up">
+                <div class="hero-icon mb-4">
+                    <i class="fas fa-calendar-check text-primary display-3"></i>
+                </div>
+                <h1 class="display-4 fw-bold text-white mb-4">Book Your Perfect Ride</h1>
+                <p class="lead text-white-50 mb-5">Choose from our premium fleet and experience luxury, comfort, and reliability on every journey.</p>
+                <div class="booking-features">
+                    <div class="row text-center">
+                        <div class="col-md-3 col-6">
+                            <div class="feature-item">
+                                <i class="fas fa-clock text-warning mb-2"></i>
+                                <p class="text-white-50 small">24/7 Service</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-6">
+                            <div class="feature-item">
+                                <i class="fas fa-shield-alt text-warning mb-2"></i>
+                                <p class="text-white-50 small">Fully Insured</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-6">
+                            <div class="feature-item">
+                                <i class="fas fa-car text-warning mb-2"></i>
+                                <p class="text-white-50 small">Premium Fleet</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-6">
+                            <div class="feature-item">
+                                <i class="fas fa-headset text-warning mb-2"></i>
+                                <p class="text-white-50 small">Support</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Booking Form Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="card shadow-lg border-0" data-aos="fade-up">
+                    <div class="card-header bg-primary text-white py-4">
+                        <h3 class="mb-0 text-center">
+                            <i class="fas fa-car me-2"></i>Reserve Your Vehicle
+                        </h3>
+                        <p class="mb-0 text-center opacity-75">Fill out the form below to get started</p>
+                    </div>
+                    <div class="card-body p-5">
+                        <form id="bookingForm" method="POST" novalidate data-autosave="true">
+                            {% csrf_token %}
+                            
+                            <!-- Auto-save indicator -->
+                            <div class="autosave-indicator" id="autosaveIndicator" style="display: none;">
+                                <i class="fas fa-save text-success"></i>
+                                <span class="text-success">Draft saved</span>
+                            </div>
+                            
+                            <!-- Personal Information -->
+                            <div class="section-header mb-4">
+                                <h5 class="text-primary">
+                                    <i class="fas fa-user me-2"></i>Personal Information
+                                </h5>
+                                <hr class="text-primary">
+                            </div>
+                            
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <label for="full_name" class="form-label fw-bold">
+                                        <i class="fas fa-user me-1"></i>Full Name <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="text" class="form-control form-control-lg" id="full_name" name="full_name" required placeholder="Enter your full name">
+                                    <div class="invalid-feedback">Please provide your full name.</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="email" class="form-label fw-bold">
+                                        <i class="fas fa-envelope me-1"></i>Email Address <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="email" class="form-control form-control-lg" id="email" name="email" required placeholder="your.email@example.com">
+                                    <div class="invalid-feedback">Please provide a valid email address.</div>
+                                </div>
+                            </div>
+                            
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <label for="phone" class="form-label fw-bold">
+                                        <i class="fas fa-phone me-1"></i>Phone Number <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="tel" class="form-control form-control-lg" id="phone" name="phone" required placeholder="+1 (555) 123-4567">
+                                    <div class="invalid-feedback">Please provide your phone number.</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="driver_license" class="form-label fw-bold">
+                                        <i class="fas fa-id-card me-1"></i>Driver's License <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="text" class="form-control form-control-lg" id="driver_license" name="driver_license" required placeholder="License number">
+                                    <div class="invalid-feedback">Please provide your driver's license number.</div>
+                                </div>
+                            </div>
+                            
+                            <!-- Rental Details -->
+                            <div class="section-header mb-4 mt-5">
+                                <h5 class="text-primary">
+                                    <i class="fas fa-map-marker-alt me-2"></i>Rental Details
+                                </h5>
+                                <hr class="text-primary">
+                            </div>
+                            
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <label for="pickup_location" class="form-label fw-bold">
+                                        <i class="fas fa-map-pin me-1"></i>Pick-Up Location <span class="text-danger">*</span>
+                                    </label>
+                                    <select class="form-select form-select-lg" id="pickup_location" name="pickup_location" required>
+                                        <option value="" disabled selected>Select pickup location</option>
+                                        <option value="airport">Airport Terminal</option>
+                                        <option value="downtown">Downtown Office</option>
+                                        <option value="hotel">Hotel Pickup</option>
+                                        <option value="home">Home Delivery</option>
+                                        <option value="custom">Custom Location</option>
+                                    </select>
+                                    <div class="invalid-feedback">Please select a pickup location.</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="dropoff_location" class="form-label fw-bold">
+                                        <i class="fas fa-map-pin me-1"></i>Drop-Off Location <span class="text-danger">*</span>
+                                    </label>
+                                    <select class="form-select form-select-lg" id="dropoff_location" name="dropoff_location" required>
+                                        <option value="" disabled selected>Select drop-off location</option>
+                                        <option value="airport">Airport Terminal</option>
+                                        <option value="downtown">Downtown Office</option>
+                                        <option value="hotel">Hotel Drop-off</option>
+                                        <option value="home">Home Pickup</option>
+                                        <option value="custom">Custom Location</option>
+                                    </select>
+                                    <div class="invalid-feedback">Please select a drop-off location.</div>
+                                </div>
+                            </div>
+                            
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <label for="pickup_date" class="form-label fw-bold">
+                                        <i class="fas fa-calendar me-1"></i>Pick-Up Date <span class="text-danger">*</span>
+                                    </label>
+                                    <div class="date-picker-wrapper">
+                                        <input type="date" class="form-control form-control-lg enhanced-date-picker" id="pickup_date" name="pickup_date" required>
+                                        <div class="date-picker-icon">
+                                            <i class="fas fa-calendar-alt"></i>
+                                        </div>
+                                    </div>
+                                    <div class="invalid-feedback">Please select a pickup date.</div>
+                                    <small class="form-text text-muted">Minimum 24 hours advance booking required</small>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="pickup_time" class="form-label fw-bold">
+                                        <i class="fas fa-clock me-1"></i>Pick-Up Time <span class="text-danger">*</span>
+                                    </label>
+                                    <select class="form-select form-select-lg" id="pickup_time" name="pickup_time" required>
+                                        <option value="" disabled selected>Select time</option>
+                                        <option value="08:00">8:00 AM</option>
+                                        <option value="09:00">9:00 AM</option>
+                                        <option value="10:00">10:00 AM</option>
+                                        <option value="11:00">11:00 AM</option>
+                                        <option value="12:00">12:00 PM</option>
+                                        <option value="13:00">1:00 PM</option>
+                                        <option value="14:00">2:00 PM</option>
+                                        <option value="15:00">3:00 PM</option>
+                                        <option value="16:00">4:00 PM</option>
+                                        <option value="17:00">5:00 PM</option>
+                                        <option value="18:00">6:00 PM</option>
+                                    </select>
+                                    <div class="invalid-feedback">Please select a pickup time.</div>
+                                </div>
+                            </div>
+                            
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <label for="dropoff_date" class="form-label fw-bold">
+                                        <i class="fas fa-calendar me-1"></i>Drop-Off Date <span class="text-danger">*</span>
+                                    </label>
+                                    <div class="date-picker-wrapper">
+                                        <input type="date" class="form-control form-control-lg enhanced-date-picker" id="dropoff_date" name="dropoff_date" required>
+                                        <div class="date-picker-icon">
+                                            <i class="fas fa-calendar-alt"></i>
+                                        </div>
+                                    </div>
+                                    <div class="invalid-feedback">Please select a drop-off date.</div>
+                                    <small class="form-text text-muted">Must be after pickup date</small>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="dropoff_time" class="form-label fw-bold">
+                                        <i class="fas fa-clock me-1"></i>Drop-Off Time <span class="text-danger">*</span>
+                                    </label>
+                                    <select class="form-select form-select-lg" id="dropoff_time" name="dropoff_time" required>
+                                        <option value="" disabled selected>Select time</option>
+                                        <option value="08:00">8:00 AM</option>
+                                        <option value="09:00">9:00 AM</option>
+                                        <option value="10:00">10:00 AM</option>
+                                        <option value="11:00">11:00 AM</option>
+                                        <option value="12:00">12:00 PM</option>
+                                        <option value="13:00">1:00 PM</option>
+                                        <option value="14:00">2:00 PM</option>
+                                        <option value="15:00">3:00 PM</option>
+                                        <option value="16:00">4:00 PM</option>
+                                        <option value="17:00">5:00 PM</option>
+                                        <option value="18:00">6:00 PM</option>
+                                    </select>
+                                    <div class="invalid-feedback">Please select a drop-off time.</div>
+                                </div>
+                            </div>
+                            
+                            <!-- Vehicle Selection -->
+                            <div class="section-header mb-4 mt-5">
+                                <h5 class="text-primary">
+                                    <i class="fas fa-car me-2"></i>Vehicle Preferences
+                                </h5>
+                                <hr class="text-primary">
+                            </div>
+                            
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <label for="car_category" class="form-label fw-bold">
+                                        <i class="fas fa-list me-1"></i>Vehicle Category <span class="text-danger">*</span>
+                                    </label>
+                                    <select class="form-select form-select-lg" id="car_category" name="car_category" required>
+                                        <option value="" disabled selected>Select vehicle category</option>
+                                        <option value="economy">Economy ($25/day)</option>
+                                        <option value="compact">Compact ($35/day)</option>
+                                        <option value="sedan">Sedan ($45/day)</option>
+                                        <option value="suv">SUV ($65/day)</option>
+                                        <option value="luxury">Luxury ($85/day)</option>
+                                        <option value="sports">Sports Car ($120/day)</option>
+                                    </select>
+                                    <div class="invalid-feedback">Please select a vehicle category.</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="transmission" class="form-label fw-bold">
+                                        <i class="fas fa-cogs me-1"></i>Transmission Preference
+                                    </label>
+                                    <select class="form-select form-select-lg" id="transmission" name="transmission">
+                                        <option value="automatic" selected>Automatic</option>
+                                        <option value="manual">Manual</option>
+                                        <option value="no-preference">No Preference</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <!-- Additional Options -->
+                            <div class="section-header mb-4 mt-5">
+                                <h5 class="text-primary">
+                                    <i class="fas fa-plus-circle me-2"></i>Additional Options
+                                </h5>
+                                <hr class="text-primary">
+                            </div>
+                            
+                            <div class="row mb-4">
+                                <div class="col-12">
+                                    <label class="form-label fw-bold">Add-ons (Optional)</label>
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="form-check form-check-lg">
+                                                <input class="form-check-input" type="checkbox" id="gps" name="extras" value="gps">
+                                                <label class="form-check-label" for="gps">
+                                                    <i class="fas fa-map me-2"></i>GPS Navigation (+$5/day)
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-check form-check-lg">
+                                                <input class="form-check-input" type="checkbox" id="child_seat" name="extras" value="child_seat">
+                                                <label class="form-check-label" for="child_seat">
+                                                    <i class="fas fa-baby me-2"></i>Child Seat (+$3/day)
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-check form-check-lg">
+                                                <input class="form-check-input" type="checkbox" id="insurance" name="extras" value="insurance">
+                                                <label class="form-check-label" for="insurance">
+                                                    <i class="fas fa-shield-alt me-2"></i>Extra Insurance (+$15/day)
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row mb-4">
+                                <div class="col-12">
+                                    <label for="special_requests" class="form-label fw-bold">
+                                        <i class="fas fa-comment me-1"></i>Special Requests or Notes
+                                    </label>
+                                    <textarea class="form-control" id="special_requests" name="special_requests" rows="3" placeholder="Any special requests, dietary restrictions for snacks, preferred music, etc."></textarea>
+                                </div>
+                            </div>
+                            
+                            <!-- Terms and Submit -->
+                            <div class="row mb-4">
+                                <div class="col-12">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="terms" name="terms" required>
+                                        <label class="form-check-label" for="terms">
+                                            I agree to the <a href="#" class="text-primary">Terms and Conditions</a> and <a href="#" class="text-primary">Privacy Policy</a> <span class="text-danger">*</span>
+                                        </label>
+                                        <div class="invalid-feedback">You must agree to the terms and conditions.</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Estimated Cost Display -->
+                            <div class="alert alert-info mb-4" id="costEstimate" style="display: none;">
+                                <h6><i class="fas fa-calculator me-2"></i>Estimated Cost</h6>
+                                <div id="costBreakdown"></div>
+                                <hr>
+                                <strong>Total: <span id="totalCost">$0</span></strong>
+                            </div>
+                            
+                            <!-- Submit Button -->
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-primary btn-lg px-5 py-3 shadow">
+                                    <i class="fas fa-calendar-check me-2"></i>Submit Booking Request
+                                </button>
+                                <p class="text-muted small mt-2">You'll receive a confirmation email within 15 minutes</p>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Why Choose Us Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 text-center mb-5" data-aos="fade-up">
+                <h2 class="display-6 fw-bold mb-4">Why Choose Brownie Car Rental?</h2>
+                <p class="lead text-muted">Experience the difference with our premium service</p>
+            </div>
+        </div>
+        <div class="row g-4">
+            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="100">
+                <div class="text-center">
+                    <div class="feature-icon mb-3">
+                        <i class="fas fa-star text-warning display-4"></i>
+                    </div>
+                    <h5>Premium Fleet</h5>
+                    <p class="text-muted">Latest model vehicles with top-notch maintenance</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="200">
+                <div class="text-center">
+                    <div class="feature-icon mb-3">
+                        <i class="fas fa-clock text-success display-4"></i>
+                    </div>
+                    <h5>24/7 Support</h5>
+                    <p class="text-muted">Round-the-clock customer service and roadside assistance</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="300">
+                <div class="text-center">
+                    <div class="feature-icon mb-3">
+                        <i class="fas fa-dollar-sign text-info display-4"></i>
+                    </div>
+                    <h5>Best Prices</h5>
+                    <p class="text-muted">Competitive rates with no hidden fees</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="400">
+                <div class="text-center">
+                    <div class="feature-icon mb-3">
+                        <i class="fas fa-shield-alt text-primary display-4"></i>
+                    </div>
+                    <h5>Fully Insured</h5>
+                    <p class="text-muted">Comprehensive insurance coverage for peace of mind</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .booking-hero {
+        background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .booking-hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.1);
+    }
+    
+    .hero-icon {
+        position: relative;
+        z-index: 2;
+    }
+    
+    .feature-item {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 12px;
+        padding: 1.5rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .feature-item:hover {
+        transform: translateY(-5px);
+        background: rgba(255, 255, 255, 0.15);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+    
+    .feature-item i {
+        font-size: 2rem;
+    }
+    
+    .section-header h5 {
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+    
+    .form-control, .form-select {
+        border-radius: 8px;
+        border: 2px solid #e3e6f0;
+        transition: all 0.3s ease;
+    }
+    
+    .form-control:focus, .form-select:focus {
+        border-color: #4e73df;
+        box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+    }
+    
+    .form-check-input {
+        border-radius: 4px;
+        border: 2px solid #e3e6f0;
+    }
+    
+    .form-check-input:checked {
+        background-color: #4e73df;
+        border-color: #4e73df;
+    }
+    
+    .alert-info {
+        background-color: rgba(78, 115, 223, 0.1);
+        border-color: #4e73df;
+        color: #4e73df;
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(78, 115, 223, 0.3);
+    }
+    
+    /* Enhanced Date Picker Styling */
+    .date-picker-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+    
+    .enhanced-date-picker {
+        padding-right: 45px;
+    }
+    
+    .date-picker-icon {
+        position: absolute;
+        right: 15px;
+        color: #6c757d;
+        pointer-events: none;
+        z-index: 5;
+    }
+    
+    .enhanced-date-picker:focus + .date-picker-icon {
+        color: #4e73df;
+    }
+    
+    /* Auto-save Indicator */
+    .autosave-indicator {
+        position: fixed;
+        top: 100px;
+        right: 20px;
+        background: rgba(255, 255, 255, 0.95);
+        border: 1px solid #28a745;
+        border-radius: 8px;
+        padding: 8px 12px;
+        z-index: 1000;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        font-size: 0.875rem;
+        transition: all 0.3s ease;
+    }
+    
+    .autosave-indicator.show {
+        display: block !important;
+        animation: slideInFade 0.3s ease;
+    }
+    
+    @keyframes slideInFade {
+        from {
+            opacity: 0;
+            transform: translateX(100%);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
+    /* Form field validation improvements */
+    .form-control:invalid {
+        border-color: #dc3545;
+        box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+    }
+    
+    .form-control:valid {
+        border-color: #28a745;
+    }
+    
+    .form-select:invalid {
+        border-color: #dc3545;
+    }
+    
+    .form-select:valid {
+        border-color: #28a745;
+    }
+    
+    @media (max-width: 768px) {
+        .booking-features .col-6 {
+            margin-bottom: 1rem;
+        }
+        
+        .card-body {
+            padding: 2rem !important;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Form validation and cost estimation
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('bookingForm');
+    const categorySelect = document.getElementById('car_category');
+    const pickupDate = document.getElementById('pickup_date');
+    const dropoffDate = document.getElementById('dropoff_date');
+    const costEstimate = document.getElementById('costEstimate');
+    const costBreakdown = document.getElementById('costBreakdown');
+    const totalCost = document.getElementById('totalCost');
+    
+    // Set minimum date to today (24 hours from now)
+    const now = new Date();
+    now.setDate(now.getDate() + 1); // 24 hours advance booking
+    const minDate = now.toISOString().split('T')[0];
+    pickupDate.min = minDate;
+    dropoffDate.min = minDate;
+    
+    // Update minimum drop-off date when pickup date changes
+    pickupDate.addEventListener('change', function() {
+        dropoffDate.min = this.value;
+        calculateCost();
+    });
+    
+    dropoffDate.addEventListener('change', calculateCost);
+    categorySelect.addEventListener('change', calculateCost);
+    
+    // Calculate rental cost
+    function calculateCost() {
+        if (!pickupDate.value || !dropoffDate.value || !categorySelect.value) {
+            costEstimate.style.display = 'none';
+            return;
+        }
+        
+        const pickup = new Date(pickupDate.value);
+        const dropoff = new Date(dropoffDate.value);
+        const days = Math.ceil((dropoff - pickup) / (1000 * 60 * 60 * 24));
+        
+        if (days <= 0) {
+            costEstimate.style.display = 'none';
+            return;
+        }
+        
+        const rates = {
+            'economy': 25,
+            'compact': 35,
+            'sedan': 45,
+            'suv': 65,
+            'luxury': 85,
+            'sports': 120
+        };
+        
+        const dailyRate = rates[categorySelect.value] || 0;
+        const baseTotal = dailyRate * days;
+        
+        // Add extras
+        let extrasTotal = 0;
+        const extras = document.querySelectorAll('input[name="extras"]:checked');
+        extras.forEach(extra => {
+            if (extra.value === 'gps') extrasTotal += 5 * days;
+            if (extra.value === 'child_seat') extrasTotal += 3 * days;
+            if (extra.value === 'insurance') extrasTotal += 15 * days;
+        });
+        
+        const total = baseTotal + extrasTotal;
+        
+        costBreakdown.innerHTML = `
+            <div>Vehicle (${days} day${days > 1 ? 's' : ''} x $${dailyRate}): $${baseTotal}</div>
+            ${extrasTotal > 0 ? `<div>Extras: $${extrasTotal}</div>` : ''}
+        `;
+        
+        totalCost.textContent = `$${total}`;
+        costEstimate.style.display = 'block';
+    }
+    
+    // Add event listeners for extras checkboxes
+    document.querySelectorAll('input[name="extras"]').forEach(checkbox => {
+        checkbox.addEventListener('change', calculateCost);
+    });
+    
+    // Form submission
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Add Bootstrap validation classes
+        form.classList.add('was-validated');
+        
+        if (form.checkValidity()) {
+            // Simulate form submission
+            alert('Booking request submitted successfully! You will receive a confirmation email within 15 minutes.');
+            
+            // In a real application, you would submit the form data to your backend
+            // fetch('/submit-booking', { method: 'POST', body: new FormData(form) })
+        }
+    });
+});
+</script>
+{% endblock %}

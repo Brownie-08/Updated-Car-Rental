@@ -1,0 +1,50 @@
+🚗 BROWNIE CAR RENTAL - ADMIN NOTIFICATION
+==========================================
+
+🚨 NEW BOOKING ALERT - IMMEDIATE ACTION REQUIRED
+
+Dear Admin,
+
+A new car rental booking has been submitted and requires your immediate attention.
+
+ORDER DETAILS:
+Order Number: {{ order.order_number }}
+Status: {{ order.get_status_display }}
+Submitted: {{ order.created_at|date:"F d, Y" }} at {{ order.created_at|date:"g:i A" }}
+
+CUSTOMER INFORMATION:
+Customer Name: {{ order.dealer_name }}
+Email: {{ order.customer.email|default:"Not provided" }}
+Phone: {{ order.cell_no }}
+Address: {{ order.address }}
+
+BOOKING DETAILS:
+Vehicle: {{ order.car_name }}
+Company: {{ selected_car.company_name|default:"Not specified" }}
+Rental Period: {{ order.date_from|date:"M d, Y" }} - {{ order.date_to|date:"M d, Y" }}
+Duration: {{ order.get_rental_duration_display }}
+
+REVENUE SUMMARY:
+Daily Rate: ${{ order.daily_rate }}
+Rental Days: {{ order.rental_days }} day{{ order.rental_days|pluralize }}
+Subtotal: ${{ order.subtotal }}
+Tax ({{ order.tax_rate }}%): ${{ order.tax_amount }}
+Total Revenue: ${{ order.total_amount }}
+
+⚠️ ACTION REQUIRED:
+The following steps need to be completed:
+• Review booking details for accuracy
+• Confirm vehicle availability for requested dates
+• Contact customer to confirm pickup details
+• Update booking status in the admin panel
+• Prepare vehicle for rental period
+
+PRIORITY: HIGH
+This booking requires immediate review and confirmation.
+
+Please log into the admin panel to process this booking.
+
+---
+This is an automated admin notification.
+Brownie Car Rental Admin System
+© 2024 Brownie Car Rental. All rights reserved.

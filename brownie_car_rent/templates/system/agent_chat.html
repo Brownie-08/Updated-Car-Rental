@@ -1,0 +1,521 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent Chat - Room {{ room.room_id }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .chat-container {
+            max-width: 1000px;
+            margin: 20px auto;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .chat-header {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .chat-messages {
+            height: 500px;
+            overflow-y: auto;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+        
+        .message {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: flex-start;
+        }
+        
+        .message.user {
+            justify-content: flex-end;
+        }
+        
+        .message.bot .message-bubble {
+            background: #e9ecef;
+            border: 1px solid #dee2e6;
+            max-width: 70%;
+        }
+        
+        .message.user .message-bubble {
+            background: #007bff;
+            color: white;
+            max-width: 70%;
+        }
+        
+        .message.agent .message-bubble {
+            background: #28a745;
+            color: white;
+            max-width: 70%;
+        }
+        
+        .message.system .message-bubble {
+            background: #ffc107;
+            color: #212529;
+            max-width: 80%;
+            font-style: italic;
+        }
+        
+        .message-bubble {
+            padding: 10px 15px;
+            border-radius: 18px;
+            word-wrap: break-word;
+        }
+        
+        .message-info {
+            font-size: 0.8em;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+        
+        .message-avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            margin-right: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        
+        .message.user .message-avatar {
+            background: #007bff;
+            color: white;
+            margin-left: 10px;
+            margin-right: 0;
+        }
+        
+        .message.bot .message-avatar {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .message.agent .message-avatar {
+            background: #28a745;
+            color: white;
+        }
+        
+        .message.system .message-avatar {
+            background: #ffc107;
+            color: #212529;
+        }
+        
+        .chat-input {
+            padding: 20px;
+            border-top: 1px solid #dee2e6;
+            background: white;
+        }
+        
+        .chat-input-group {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .chat-input-group textarea {
+            flex: 1;
+            border: 1px solid #dee2e6;
+            border-radius: 10px;
+            padding: 10px 15px;
+            outline: none;
+            resize: none;
+            min-height: 50px;
+        }
+        
+        .chat-input-group button {
+            border-radius: 10px;
+            padding: 10px 20px;
+            border: none;
+            background: #28a745;
+            color: white;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .chat-input-group button:hover {
+            background: #218838;
+        }
+        
+        .chat-input-group button:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+        
+        .room-info {
+            background: #e3f2fd;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #2196f3;
+        }
+        
+        .chat-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .chat-actions button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .btn-close-chat {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .btn-close-chat:hover {
+            background: #c82333;
+        }
+        
+        .btn-dashboard {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-dashboard:hover {
+            background: #5a6268;
+        }
+        
+        .typing-indicator {
+            display: none;
+            padding: 10px 20px;
+            font-style: italic;
+            color: #6c757d;
+        }
+        
+        .connection-status {
+            padding: 10px 20px;
+            text-align: center;
+            font-size: 0.9em;
+        }
+        
+        .connection-status.connected {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .connection-status.disconnected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        @media (max-width: 768px) {
+            .chat-container {
+                margin: 10px;
+                height: calc(100vh - 20px);
+            }
+            
+            .chat-messages {
+                height: calc(100vh - 250px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="chat-container">
+            <div class="chat-header">
+                <div>
+                    <h5 class="mb-0">
+                        <i class="fas fa-headset me-2"></i>
+                        Agent Chat - Room {{ room.room_id }}
+                    </h5>
+                    <small>User: {{ room.user.username|default:"Guest" }} | Status: {{ room.get_status_display }}</small>
+                </div>
+                <div class="chat-actions">
+                    <button class="btn-dashboard" onclick="window.location.href='{% url 'chat:agent_dashboard' %}'">
+                        <i class="fas fa-tachometer-alt me-1"></i>
+                        Dashboard
+                    </button>
+                    <button class="btn-close-chat" onclick="closeChat()">
+                        <i class="fas fa-times me-1"></i>
+                        Close Chat
+                    </button>
+                </div>
+            </div>
+            
+            <div class="connection-status connected" id="connection-status">
+                <i class="fas fa-circle me-1"></i>
+                Connected
+            </div>
+            
+            <div class="chat-messages" id="chat-messages">
+                <div class="room-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Room Information:</strong><br>
+                    Room ID: {{ room.room_id }}<br>
+                    Created: {{ room.created_at|date:"M d, Y H:i" }}<br>
+                    User: {{ room.user.username|default:"Guest User" }}<br>
+                    Status: {{ room.get_status_display }}
+                </div>
+                
+                <!-- Load existing messages -->
+                {% for message in messages %}
+                <div class="message {{ message.sender_type }}">
+                    <div class="message-avatar">
+                        {% if message.sender_type == 'bot' %}
+                            <i class="fas fa-robot"></i>
+                        {% elif message.sender_type == 'user' %}
+                            <i class="fas fa-user"></i>
+                        {% elif message.sender_type == 'agent' %}
+                            <i class="fas fa-headset"></i>
+                        {% else %}
+                            <i class="fas fa-cog"></i>
+                        {% endif %}
+                    </div>
+                    <div>
+                        <div class="message-bubble">
+                            {{ message.content|linebreaks }}
+                        </div>
+                        <div class="message-info">
+                            {% if message.sender_user %}
+                                {{ message.sender_user.username }}
+                            {% else %}
+                                {{ message.sender_type|title }}
+                            {% endif %}
+                            • {{ message.created_at|date:"H:i" }}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <div class="typing-indicator" id="typing-indicator">
+                <i class="fas fa-user me-2"></i>
+                User is typing...
+            </div>
+            
+            <div class="chat-input">
+                <div class="chat-input-group">
+                    <textarea id="message-input" placeholder="Type your message..." rows="2" maxlength="1000"></textarea>
+                    <button type="button" id="send-button" onclick="sendMessage()">
+                        <i class="fas fa-paper-plane me-1"></i>
+                        Send
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const roomId = '{{ room.room_id }}';
+        const agentUsername = '{{ agent.username }}';
+        
+        let chatSocket = null;
+        let isConnected = false;
+        
+        // Initialize chat
+        document.addEventListener('DOMContentLoaded', function() {
+            connectWebSocket();
+            setupEventListeners();
+            scrollToBottom();
+        });
+        
+        function connectWebSocket() {
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const socketUrl = `${protocol}//${window.location.host}/ws/chat/${roomId}/`;
+            
+            chatSocket = new WebSocket(socketUrl);
+            
+            chatSocket.onopen = function(e) {
+                console.log('WebSocket connected');
+                isConnected = true;
+                updateConnectionStatus(true);
+            };
+            
+            chatSocket.onmessage = function(e) {
+                const data = JSON.parse(e.data);
+                handleIncomingMessage(data);
+            };
+            
+            chatSocket.onclose = function(e) {
+                console.log('WebSocket disconnected');
+                isConnected = false;
+                updateConnectionStatus(false);
+                
+                // Attempt to reconnect after 3 seconds
+                setTimeout(() => {
+                    if (!isConnected) {
+                        connectWebSocket();
+                    }
+                }, 3000);
+            };
+            
+            chatSocket.onerror = function(e) {
+                console.error('WebSocket error:', e);
+                updateConnectionStatus(false);
+            };
+        }
+        
+        function setupEventListeners() {
+            const messageInput = document.getElementById('message-input');
+            const sendButton = document.getElementById('send-button');
+            
+            messageInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            });
+            
+            messageInput.addEventListener('input', function() {
+                const message = this.value.trim();
+                sendButton.disabled = !message || !isConnected;
+            });
+        }
+        
+        function sendMessage() {
+            const messageInput = document.getElementById('message-input');
+            const message = messageInput.value.trim();
+            
+            if (!message || !isConnected) return;
+            
+            const messageData = {
+                message: message,
+                type: 'agent_message'
+            };
+            
+            chatSocket.send(JSON.stringify(messageData));
+            messageInput.value = '';
+            document.getElementById('send-button').disabled = true;
+        }
+        
+        function handleIncomingMessage(data) {
+            hideTypingIndicator();
+            
+            if (data.type === 'chat_message') {
+                addMessageToChat(data.message, data.sender, data.sender_type, data.timestamp);
+            }
+        }
+        
+        function addMessageToChat(message, sender, senderType, timestamp) {
+            const messagesContainer = document.getElementById('chat-messages');
+            const messageElement = document.createElement('div');
+            messageElement.className = `message ${senderType}`;
+            
+            const avatarIcon = getAvatarIcon(senderType);
+            const messageTime = new Date(timestamp).toLocaleTimeString();
+            
+            messageElement.innerHTML = `
+                <div class="message-avatar">
+                    <i class="${avatarIcon}"></i>
+                </div>
+                <div>
+                    <div class="message-bubble">
+                        ${escapeHtml(message)}
+                    </div>
+                    <div class="message-info">
+                        ${sender} • ${messageTime}
+                    </div>
+                </div>
+            `;
+            
+            messagesContainer.appendChild(messageElement);
+            scrollToBottom();
+        }
+        
+        function getAvatarIcon(senderType) {
+            switch(senderType) {
+                case 'bot': return 'fas fa-robot';
+                case 'user': return 'fas fa-user';
+                case 'agent': return 'fas fa-headset';
+                case 'system': return 'fas fa-cog';
+                default: return 'fas fa-user';
+            }
+        }
+        
+        function showTypingIndicator() {
+            document.getElementById('typing-indicator').style.display = 'block';
+        }
+        
+        function hideTypingIndicator() {
+            document.getElementById('typing-indicator').style.display = 'none';
+        }
+        
+        function updateConnectionStatus(connected) {
+            const statusElement = document.getElementById('connection-status');
+            
+            if (connected) {
+                statusElement.className = 'connection-status connected';
+                statusElement.innerHTML = '<i class="fas fa-circle me-1"></i> Connected';
+            } else {
+                statusElement.className = 'connection-status disconnected';
+                statusElement.innerHTML = '<i class="fas fa-circle me-1"></i> Disconnected - Reconnecting...';
+            }
+        }
+        
+        function scrollToBottom() {
+            const messagesContainer = document.getElementById('chat-messages');
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML.replace(/\n/g, '<br>');
+        }
+        
+        function closeChat() {
+            if (confirm('Are you sure you want to close this chat session?')) {
+                fetch(`{% url 'chat:close_chat' room.room_id %}`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken'),
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        alert('Chat session closed successfully');
+                        window.location.href = '{% url 'chat:agent_dashboard' %}';
+                    } else {
+                        alert('Error closing chat: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error closing chat session');
+                });
+            }
+        }
+        
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        
+        // Initialize send button state
+        document.getElementById('send-button').disabled = true;
+    </script>
+</body>
+</html>

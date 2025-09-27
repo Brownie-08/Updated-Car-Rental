@@ -1,0 +1,191 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Payment Successful - Brownie Car Rental{% endblock %}
+
+{% block extra_css %}
+<style>
+    .success-container {
+        max-width: 700px;
+        margin: 2rem auto;
+        padding: 2rem;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        text-align: center;
+    }
+    .success-header {
+        color: #28a745;
+        margin-bottom: 2rem;
+    }
+    .success-icon {
+        font-size: 4rem;
+        color: #28a745;
+        margin-bottom: 1rem;
+        animation: bounce 2s infinite;
+    }
+    @keyframes bounce {
+        0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+        40% { transform: translateY(-10px); }
+        60% { transform: translateY(-5px); }
+    }
+    .order-summary {
+        background: #f8f9fa;
+        padding: 2rem;
+        border-radius: 8px;
+        margin: 2rem 0;
+        border-left: 4px solid #28a745;
+        text-align: left;
+    }
+    .btn-primary-custom {
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        border: none;
+        padding: 12px 30px;
+        border-radius: 25px;
+        color: white;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-block;
+        margin: 0.5rem;
+        transition: all 0.3s ease;
+    }
+    .btn-primary-custom:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(40, 167, 69, 0.3);
+        color: white;
+        text-decoration: none;
+    }
+    .btn-outline-custom {
+        border: 2px solid #28a745;
+        color: #28a745;
+        background: transparent;
+        padding: 12px 30px;
+        border-radius: 25px;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-block;
+        margin: 0.5rem;
+        transition: all 0.3s ease;
+    }
+    .btn-outline-custom:hover {
+        background: #28a745;
+        color: white;
+        text-decoration: none;
+        transform: translateY(-2px);
+    }
+    .next-steps {
+        background: #e8f5e8;
+        padding: 1.5rem;
+        border-radius: 8px;
+        margin: 2rem 0;
+    }
+    .contact-info {
+        background: #fff3cd;
+        padding: 1.5rem;
+        border-radius: 8px;
+        margin: 2rem 0;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <div class="success-container">
+        <div class="success-header">
+            <div class="success-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h1>🎉 Payment Successful!</h1>
+            <p class="lead">Your car rental booking has been confirmed</p>
+        </div>
+
+        {% if order %}
+        <div class="order-summary">
+            <h4><i class="fas fa-receipt text-success"></i> Booking Confirmation</h4>
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <strong>Order Number:</strong><br>
+                    <span class="text-success h5">#{{ order.order_number }}</span>
+                </div>
+                <div class="col-md-6">
+                    <strong>Vehicle:</strong><br>
+                    {{ order.car_name }}
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <strong>Customer:</strong><br>
+                    {{ order.dealer_name }}
+                </div>
+                <div class="col-md-6">
+                    <strong>Rental Period:</strong><br>
+                    {{ order.date_from|date:"M d, Y" }} - {{ order.date_to|date:"M d, Y" }}
+                </div>
+            </div>
+            {% if transaction %}
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <strong>Payment Method:</strong><br>
+                    {{ transaction.payment_method.display_name }}
+                </div>
+                <div class="col-md-6">
+                    <strong>Amount Paid:</strong><br>
+                    <span class="text-success h5">₦{{ transaction.amount }}</span>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-md-12">
+                    <strong>Transaction ID:</strong><br>
+                    <small class="text-muted">{{ transaction.transaction_id }}</small>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <div class="next-steps">
+            <h5><i class="fas fa-clipboard-list text-primary"></i> What's Next?</h5>
+            <ul class="text-left">
+                <li>📧 <strong>Confirmation Email:</strong> A detailed confirmation has been sent to your email</li>
+                <li>📞 <strong>Contact Soon:</strong> Our team will contact you within 24 hours for pickup arrangements</li>
+                <li>🆔 <strong>Documents:</strong> Please bring your valid driver's license and credit card</li>
+                <li>🕐 <strong>Pickup Time:</strong> Arrive 15 minutes early for vehicle inspection</li>
+            </ul>
+        </div>
+
+        <div class="contact-info">
+            <h6><i class="fas fa-headset"></i> Need Assistance?</h6>
+            <p>
+                <i class="fas fa-phone"></i> <strong>Phone:</strong> +1 (555) 123-4567<br>
+                <i class="fas fa-envelope"></i> <strong>Email:</strong> support@browniecarrental.com<br>
+                <i class="fas fa-clock"></i> <strong>Hours:</strong> 24/7 Customer Support
+            </p>
+        </div>
+
+        <div class="mt-4">
+            {% if order %}
+            <a href="{% url 'system:order_detail' order.id %}" class="btn-primary-custom">
+                <i class="fas fa-eye"></i> View Order Details
+            </a>
+            {% endif %}
+            
+            {% if receipt %}
+            <a href="{% url 'system:download_receipt' transaction.transaction_id %}" class="btn-outline-custom">
+                <i class="fas fa-download"></i> Download Receipt
+            </a>
+            {% endif %}
+            
+            <a href="{% url 'system:home' %}" class="btn-outline-custom">
+                <i class="fas fa-home"></i> Back to Home
+            </a>
+        </div>
+
+        <div class="mt-5">
+            <p class="text-muted">
+                <i class="fas fa-shield-alt"></i>
+                <strong>Secure Transaction:</strong> Your payment was processed securely via Paystack
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

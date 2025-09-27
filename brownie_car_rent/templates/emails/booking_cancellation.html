@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Cancellation - {{ order.order_number }}</title>
+    <style>
+        /* Reset styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f8fafc;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="1" fill="%23ffffff" opacity="0.1"/></pattern></defs><rect width="100%" height="100%" fill="url(%23grain)"/></svg>') repeat;
+        }
+        
+        .logo {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .header-subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+            margin: 0;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .content {
+            padding: 40px 30px;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            background: #dc2626;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .order-number {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 30px;
+            text-align: center;
+            padding: 20px;
+            background: #fef2f2;
+            border-radius: 8px;
+            border-left: 4px solid #dc2626;
+        }
+        
+        .booking-details {
+            background: #f8fafc;
+            padding: 30px;
+            border-radius: 12px;
+            margin: 30px 0;
+            border: 1px solid #e5e7eb;
+        }
+        
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+        
+        .detail-label {
+            font-weight: 600;
+            color: #4b5563;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .detail-value {
+            color: #1f2937;
+            font-weight: 500;
+        }
+        
+        .cancellation-info {
+            background: #fef2f2;
+            border: 2px solid #f87171;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 25px 0;
+        }
+        
+        .cancellation-info h3 {
+            color: #dc2626;
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        
+        .cancellation-info p {
+            color: #7f1d1d;
+            margin-bottom: 10px;
+        }
+        
+        .refund-section {
+            background: #f0fdf4;
+            padding: 25px;
+            border-radius: 12px;
+            margin: 25px 0;
+            border: 2px solid #22c55e;
+        }
+        
+        .refund-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #166534;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .refund-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            color: #166534;
+        }
+        
+        .refund-total {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 0;
+            border-top: 2px solid #22c55e;
+            margin-top: 10px;
+            font-size: 18px;
+            font-weight: 700;
+            color: #166534;
+        }
+        
+        .next-steps {
+            background: #eff6ff;
+            border: 1px solid #3b82f6;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 25px 0;
+        }
+        
+        .next-steps h3 {
+            color: #1e40af;
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+        
+        .next-steps ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        
+        .next-steps li {
+            margin-bottom: 8px;
+            color: #1e40af;
+        }
+        
+        .contact-section {
+            background: #f3f4f6;
+            padding: 25px;
+            border-radius: 12px;
+            margin: 25px 0;
+            text-align: center;
+        }
+        
+        .contact-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 15px;
+        }
+        
+        .contact-info {
+            color: #4b5563;
+            line-height: 1.8;
+        }
+        
+        .footer {
+            background: #1f2937;
+            color: #9ca3af;
+            padding: 30px;
+            text-align: center;
+            font-size: 14px;
+        }
+        
+        .footer-logo {
+            font-size: 20px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 10px;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                margin: 0;
+                border-radius: 0;
+            }
+            
+            .header, .content, .footer {
+                padding: 20px;
+            }
+            
+            .booking-details {
+                padding: 20px;
+            }
+            
+            .detail-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+            
+            .refund-row, .refund-total {
+                flex-direction: column;
+                gap: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">🚗 Brownie Car Rental</div>
+            <div class="header-subtitle">Your Premium Car Rental Service</div>
+        </div>
+        
+        <!-- Content -->
+        <div class="content">
+            <div class="status-badge">❌ Booking Cancelled</div>
+            
+            <h1 style="color: #1f2937; margin-bottom: 10px;">Your booking has been cancelled</h1>
+            <p style="color: #6b7280; margin-bottom: 30px;">We're sorry to inform you that your car rental booking has been cancelled. Here are the details:</p>
+            
+            <div class="order-number">
+                Order #{{ order.order_number }}
+            </div>
+            
+            <!-- Cancellation Information -->
+            <div class="cancellation-info">
+                <h3>📋 Cancellation Details</h3>
+                <p><strong>Cancelled on:</strong> {{ order.updated_at|date:"F d, Y" }} at {{ order.updated_at|date:"g:i A" }}</p>
+                <p><strong>Original booking date:</strong> {{ order.created_at|date:"F d, Y" }}</p>
+                <p><strong>Reason:</strong> {{ cancellation_reason|default:"Cancelled by customer request" }}</p>
+            </div>
+            
+            <!-- Booking Details -->
+            <div class="booking-details">
+                <h3 style="color: #1f2937; margin-bottom: 20px;">🚗 Original Booking Details</h3>
+                
+                <div class="detail-row">
+                    <div class="detail-label">
+                        <span>🚙</span> Vehicle:
+                    </div>
+                    <div class="detail-value">{{ order.car_name }}</div>
+                </div>
+                
+                <div class="detail-row">
+                    <div class="detail-label">
+                        <span>📅</span> Rental Period:
+                    </div>
+                    <div class="detail-value">{{ order.date_from|date:"M d, Y" }} - {{ order.date_to|date:"M d, Y" }}</div>
+                </div>
+                
+                <div class="detail-row">
+                    <div class="detail-label">
+                        <span>⏰</span> Duration:
+                    </div>
+                    <div class="detail-value">{{ order.get_rental_duration_display }}</div>
+                </div>
+                
+                <div class="detail-row">
+                    <div class="detail-label">
+                        <span>👤</span> Customer:
+                    </div>
+                    <div class="detail-value">{{ order.dealer_name }}</div>
+                </div>
+                
+                <div class="detail-row">
+                    <div class="detail-label">
+                        <span>📞</span> Phone:
+                    </div>
+                    <div class="detail-value">{{ order.cell_no }}</div>
+                </div>
+            </div>
+            
+            <!-- Refund Information -->
+            <div class="refund-section">
+                <div class="refund-title">
+                    <span>💰</span> Refund Information
+                </div>
+                
+                <div class="refund-row">
+                    <span>Original Total:</span>
+                    <span>${{ order.total_amount }}</span>
+                </div>
+                
+                <div class="refund-row">
+                    <span>Cancellation Fee:</span>
+                    <span>${{ cancellation_fee|default:"0.00" }}</span>
+                </div>
+                
+                <div class="refund-total">
+                    <span>Refund Amount:</span>
+                    <span>${{ refund_amount|default:order.total_amount }}</span>
+                </div>
+            </div>
+            
+            <!-- Next Steps -->
+            <div class="next-steps">
+                <h3>📝 What happens next?</h3>
+                <ul>
+                    <li>If you paid online, your refund will be processed within 3-5 business days</li>
+                    <li>You will receive a separate email confirmation once the refund is processed</li>
+                    <li>You can contact our support team if you have any questions</li>
+                    <li>We hope to serve you again in the future</li>
+                </ul>
+            </div>
+            
+            <!-- Contact Information -->
+            <div class="contact-section">
+                <div class="contact-title">Need Help?</div>
+                <div class="contact-info">
+                    <strong>24/7 Customer Support</strong><br>
+                    📞 Phone: +1 (555) 123-4567<br>
+                    📧 Email: support@browniecarrental.com<br>
+                    💬 Live Chat: Available on our website
+                </div>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <div class="footer">
+            <div class="footer-logo">Brownie Car Rental</div>
+            <p>We're sorry for any inconvenience. Thank you for choosing Brownie Car Rental.</p>
+            <p style="margin-top: 20px; font-size: 12px; opacity: 0.7;">
+                This is an automated message. Please do not reply to this email.<br>
+                © 2024 Brownie Car Rental. All rights reserved.
+            </p>
+        </div>
+    </div>
+</body>
+</html>
