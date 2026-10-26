@@ -23,7 +23,7 @@ class PortfolioDemoMiddleware:
             login(request, user, backend='django.contrib.auth.backends.ModelBackend')
             return HttpResponseRedirect('/admin/' if path == '/demo/admin/' else settings.DEMO_PROFILE_PATH)
         # Some original views perform writes on GET. Block those routes as well.
-        unsafe_path = re.search(r'(delete|remove|deactivat|approv|reject|verify-email|resend|reset|like|debug|csrf-test|create|register|signup|logout)', path, re.I)
+        unsafe_path = re.search(r'(delete|remove|deactivat|approv|reject|verify-email|resend|reset|like|debug|csrf-test|create|register|signup|logout|accept|confirm|submit|send|payment|transfer|withdraw|deposit|fund|mark-|assign|cancel|save|update|upload|edit|add-|/api/)', path, re.I)
         if request.method not in ('GET', 'HEAD', 'OPTIONS') or unsafe_path:
             return self.page('This action is disabled in the public demo. Use the links below to continue browsing.', 403)
         response = self.get_response(request)
@@ -36,3 +36,4 @@ class PortfolioDemoMiddleware:
                 response['Content-Length'] = str(len(response.content))
         response['X-Robots-Tag'] = 'noindex, nofollow'
         return response
+
